@@ -1,7 +1,13 @@
 import pygame as pg
 
 def main():
-    pass
+    pg.init()
+
+    # running = True
+    # while running:
+    #     pass  # TODO: Add GUI logic
+
+    pg.quit()
 
 if __name__ == "__main__":
     main()

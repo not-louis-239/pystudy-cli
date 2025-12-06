@@ -1,8 +1,8 @@
 import pygame as pg
 from pathlib import Path
 from typing import Literal
-from custom_types import Surface, Coord2, Colour, AColour
-from constants import WHITE
+from core.custom_types import Surface, Coord2, Colour, AColour
+from core.constants import WHITE
 
 def draw_text(surface: Surface, pos: Coord2,
               horiz_align: Literal["left", "centre", "right"],
@@ -49,12 +49,6 @@ def draw_transparent_rect(surface: Surface, pos: Coord2, size: Coord2,
     if border_thickness:
         pg.draw.rect(box_surf, border_colour, box_surf.get_rect(), border_thickness)
     surface.blit(box_surf, pos)
-
-def hp_display_colour(hp: int, max_hp: int) -> Colour:
-    frac = hp / max_hp
-    if frac > 0.5:
-        return (int(255 * 2*(1-frac)), 255, 0)
-    return (255, int(255*(2*frac)), 0)
 
 def seconds_to_time(seconds: int) -> str:
     """Accepts a seconds parameter and creates a time display

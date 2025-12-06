@@ -1,8 +1,8 @@
 from pathlib import Path
 import pygame as pg
 
-from custom_types import Colour, Surface, Coord2
-from utils import draw_text
+from core.custom_types import Colour, Surface, Coord2
+from gui.utils import draw_text
 
 class Button:
     """Button that can return pulses in response to user input."""
