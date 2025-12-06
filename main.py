@@ -1,3 +1,5 @@
+import pygame as pg
+
 def main():
     pass
 
