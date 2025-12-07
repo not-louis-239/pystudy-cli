@@ -1,20 +1,15 @@
 import sys
-import os
 import math
 from typing import Callable
 from readchar import readkey
 from datetime import datetime
 from tui.revision_modes import flashcard_mode, learn_mode, test_mode
-from tui.ui_elements import display_status_bar
-# import pygame as pg
-
-from tui.ui_elements import clear_screen, show_hotkey, cursor_input, int_convertible
+from tui.ui_elements import clear_screen, show_hotkey, cursor_input, int_convertible, display_status_bar
 from core import save_data, load_data
 from core import StudyProfile, Deck, Card
-from core.constants import VERSION_NUM
 from tui.colours import (
     col, WHITE, LIGHT_GREY, DARK_GREY, BASE_COL, RESET,
-    TITLE_COL, ACCENT_COL,
+    ACCENT_COL,
     ERROR_COL, SUCCESS_COL,
     CARD_DEF_COL, CARD_IDX_COL, CARD_TERM_COL,
     DECK_IDX_COL, DECK_NAME_COL,

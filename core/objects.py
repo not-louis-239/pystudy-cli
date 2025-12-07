@@ -1,4 +1,5 @@
 from typing import Self, TypeAlias, cast
+from core.constants import FAMILIARITY_LEVELS
 
 JSONValue: TypeAlias = (
     str | int | float | bool | None |
@@ -22,22 +23,44 @@ class JSONConvertible:
 class Card(JSONConvertible):
     """Individual flashcards."""
 
-    def __init__(self, term: str, definition: str) -> None:
+    def __init__(self, term: str, definition: str, familiarity_level: str = FAMILIARITY_LEVELS[0]) -> None:
         self.term = term
         self.definition = definition
+        if familiarity_level not in FAMILIARITY_LEVELS:
+            self.familiarity_level = FAMILIARITY_LEVELS[0]
+        else:
+            self.familiarity_level = familiarity_level
 
     def to_json(self) -> JSONObject:
         return {
             "term": self.term,
-            "definition": self.definition
+            "definition": self.definition,
+            "familiarity_level": self.familiarity_level
         }
 
     @classmethod
     def from_json(cls, data: JSONObject) -> Self:
         return cls(
             cast(str, data["term"]),
-            cast(str, data["definition"])
+            cast(str, data["definition"]),
+            cast(str, data.get("familiarity_level", FAMILIARITY_LEVELS[0]))
         )
+
+    def on_correct(self):
+        if self.familiarity_level == "New":
+            self.familiarity_level = "Familiar"
+        else:
+            current_idx = FAMILIARITY_LEVELS.index(self.familiarity_level)
+            if current_idx < len(FAMILIARITY_LEVELS) - 1:
+                self.familiarity_level = FAMILIARITY_LEVELS[current_idx + 1]
+
+    def on_incorrect(self):
+        current_idx = FAMILIARITY_LEVELS.index(self.familiarity_level)
+        if self.familiarity_level == "New":
+            new_idx = 1 # "Learning"
+        else:
+            new_idx = max(1, current_idx - 1)
+        self.familiarity_level = FAMILIARITY_LEVELS[new_idx]
 
 class Deck(JSONConvertible):
     """Individual containers for cards."""

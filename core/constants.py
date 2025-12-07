@@ -17,3 +17,5 @@ NEW_STATE: dict = {
         "warn_interrupt": False
     }
 }
+
+FAMILIARITY_LEVELS: list[str] = ["New", "Learning", "Familiar", "Proficient", "Mastered"]
