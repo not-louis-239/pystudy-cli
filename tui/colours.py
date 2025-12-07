@@ -6,29 +6,34 @@ def rgb(r: int, g: int, b: int, bg: bool = False) -> str:
 def col(code: int, bg: bool = False): # 256 colours
     return f"\033[{48 if bg else 38};5;{code}m"
 
-WHITE = col(231)
-LGREY = col(146)
-DGREY = col(103)
-BASE_COL = DGREY
-
 RESET = '\033[0m'
 ITALIC = "\033[3m"
 UNDERLINE = "\033[4m"
 
-# Custom colours
-TITLE_COL = col(222)
-SUCCESS_COL = col(120)
-ERROR_COL = col(210)
-AQUAMARINE = col(48)
-LIGHT_YELLOW = col(229)
-LIGHT_BLUE = col(45)
+# --- Base Palette ---
+WHITE = col(231)            # Pure white, for highlights
+BASE_COL = col(254)         # Main text colour, a very light grey
+LIGHT_GREY = col(248)       # Lighter grey for secondary text
+DARK_GREY = col(240)        # Darker grey for subtle text/borders
 
-CARD_IDX_COL = col(195)
-CARD_TERM_COL = LGREY
-CARD_DEF_COL = BASE_COL
+# --- Theme Colours ---
+TITLE_COL = col(215)        # Primary theme colour (light orange)
+ACCENT_COL = col(222)       # Accent/selection colour (light yellow-orange)
 
-DECK_IDX_COL = col(121)
-DECK_NAME_COL = col(189)
+# --- State Colours ---
+SUCCESS_COL = col(77)       # A clear, pleasant green
+ERROR_COL = col(197)        # A clear, unambiguous red
+LIGHT_YELLOW = col(221)     # A mellow yellow for warnings or highlights
+
+# --- UI Element Colours ---
+# Cards
+CARD_IDX_COL = LIGHT_GREY
+CARD_TERM_COL = BASE_COL
+CARD_DEF_COL = LIGHT_GREY
+
+# Decks
+DECK_IDX_COL = LIGHT_GREY
+DECK_NAME_COL = BASE_COL
 
 def _main():
     for i in range(256):  # Palette viewer
