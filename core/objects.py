@@ -9,7 +9,10 @@ JSONValue: TypeAlias = (
 JSONObject: TypeAlias = dict[str, JSONValue]
 
 class JSONConvertible:
-    """Base class for dict-convertible items, e.g. decks, cards."""
+    """
+    Base class for items that are convertible to and from JSON, e.g. decks, cards.
+    Use this for objects that should persist between sessions.
+    """
 
     def to_json(self) -> JSONObject:
         """Serialise to dict"""
@@ -23,13 +26,10 @@ class JSONConvertible:
 class Card(JSONConvertible):
     """Individual flashcards."""
 
-    def __init__(self, term: str, definition: str, familiarity_level: str = FAMILIARITY_LEVELS[0]) -> None:
+    def __init__(self, term: str, definition: str, familiarity_level: int = 0) -> None:
         self.term = term
         self.definition = definition
-        if familiarity_level not in FAMILIARITY_LEVELS:
-            self.familiarity_level = FAMILIARITY_LEVELS[0]
-        else:
-            self.familiarity_level = familiarity_level
+        self.familiarity_level = familiarity_level
 
     def to_json(self) -> JSONObject:
         return {
@@ -43,24 +43,19 @@ class Card(JSONConvertible):
         return cls(
             cast(str, data["term"]),
             cast(str, data["definition"]),
-            cast(str, data.get("familiarity_level", FAMILIARITY_LEVELS[0]))
+            cast(int, data.get("familiarity_level", 0))
         )
 
     def on_correct(self):
-        if self.familiarity_level == "New":
-            self.familiarity_level = "Familiar"
-        else:
-            current_idx = FAMILIARITY_LEVELS.index(self.familiarity_level)
-            if current_idx < len(FAMILIARITY_LEVELS) - 1:
-                self.familiarity_level = FAMILIARITY_LEVELS[current_idx + 1]
+        if self.familiarity_level == 0:
+            self.familiarity_level = 2  # Skip two steps
+            return
+        self.familiarity_level += 1
+        self.familiarity_level = min(len(FAMILIARITY_LEVELS) - 1, self.familiarity_level)
 
     def on_incorrect(self):
-        current_idx = FAMILIARITY_LEVELS.index(self.familiarity_level)
-        if self.familiarity_level == "New":
-            new_idx = 1 # "Learning"
-        else:
-            new_idx = max(1, current_idx - 1)
-        self.familiarity_level = FAMILIARITY_LEVELS[new_idx]
+        self.familiarity_level -= 1
+        self.familiarity_level = max(1, self.familiarity_level)
 
 class Deck(JSONConvertible):
     """Individual containers for cards."""
@@ -87,8 +82,6 @@ class Deck(JSONConvertible):
                 for c in cast(list[Card], data["cards"])
             ]
         )
-
-    
 
 class ConfigObject(JSONConvertible):
     def __init__(

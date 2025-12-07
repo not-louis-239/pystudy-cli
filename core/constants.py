@@ -18,4 +18,10 @@ NEW_STATE: dict = {
     }
 }
 
-FAMILIARITY_LEVELS: list[str] = ["New", "Learning", "Familiar", "Proficient", "Mastered"]
+FAMILIARITY_LEVELS: dict[int, str] = {
+    0: "New",
+    1: "Learning",
+    2: "Familiar",
+    3: "Proficient",
+    4: "Mastered"
+}
