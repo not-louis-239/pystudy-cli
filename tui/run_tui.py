@@ -3,6 +3,7 @@ import math
 from typing import Callable
 from readchar import readkey
 from datetime import datetime
+from tui.revision_modes import flashcard_mode, learn_mode, test_mode
 # import pygame as pg
 
 from tui.ui_elements import clear_screen, show_hotkey, cursor_input, int_convertible
@@ -17,10 +18,6 @@ from tui.colours import (
     DECK_IDX_COL, DECK_NAME_COL,
 )
 from core.exceptions import DeckExistsError, DeckNotFoundError
-
-# TODO: Revision menu
-def revision_menu(deck: Deck):
-    pass
 
 # TODO: Card editor
 def card_editor(deck: Deck):
@@ -171,7 +168,28 @@ def deck_menu(profile: StudyProfile, deck: Deck):
 
         # Revise deck
         elif action == 'r':
-            revision_menu(deck)
+            print(f"\n{WHITE}Select revision mode {LGREY}(or press Enter to cancel){WHITE}:")
+            print(f"{LGREY}1    {BASE_COL}Flashcards")
+            print(f"{LGREY}2    {BASE_COL}Learn")
+            print(f"{LGREY}3    {BASE_COL}Practice Test")
+
+            try:
+                mode = cursor_input()
+                if mode == '\n':
+                    continue
+                mode = int(mode)
+                if not 1 <= mode <= 3:
+                    raise ValueError
+            except ValueError:
+                input(f"{ERROR_COL}Invalid mode. {BASE_COL}(Enter to return)")
+                continue
+
+            if mode == 1:
+                flashcard_mode(deck)
+            elif mode == 2:
+                learn_mode(deck)
+            elif mode == 3:
+                test_mode(deck)
 
         # Close deck
         elif action == 'q':
