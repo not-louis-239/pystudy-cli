@@ -7,7 +7,7 @@ JSONValue: TypeAlias = (
 )
 JSONObject: TypeAlias = dict[str, JSONValue]
 
-class JSONConveritble:
+class JSONConvertible:
     """Base class for dict-convertible items, e.g. decks, cards."""
 
     def to_json(self) -> JSONObject:
@@ -15,11 +15,13 @@ class JSONConveritble:
         raise NotImplementedError
 
     @classmethod
-    def from_json(cls, source: JSONObject) -> Self:
+    def from_json(cls, data: JSONObject) -> Self:
         """Create from dict"""
         raise NotImplementedError
 
-class Card(JSONConveritble):
+class Card(JSONConvertible):
+    """Individual flashcards."""
+
     def __init__(self, term: str, definition: str) -> None:
         self.term = term
         self.definition = definition
@@ -37,8 +39,10 @@ class Card(JSONConveritble):
             cast(str, data["definition"])
         )
 
-class Deck(JSONConveritble):
-    def __init__(self, creation_date: str, name: str, cards: list[Card]) -> None:
+class Deck(JSONConvertible):
+    """Individual containers for cards."""
+
+    def __init__(self, creation_date: str, name: str, cards: list[Card] = []) -> None:
         self.creation_date = creation_date
         self.name = name
         self.cards = cards

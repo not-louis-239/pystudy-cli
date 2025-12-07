@@ -9,13 +9,24 @@ def col(code: int, bg: bool = False): # 256 colours
 WHITE = col(231)
 LGREY = col(146)
 DGREY = col(103)
+BASE_COL = DGREY
 
 RESET = '\033[0m'
 ITALIC = "\033[3m"
 UNDERLINE = "\033[4m"
 
-if __name__ == "__main__":
+# Custom colours
+TITLE_COL = col(222)
+SUCCESS_COL = col(120)
+ERROR_COL = col(210)
+AQUAMARINE = col(48)
+LIGHT_YELLOW = col(229)
+
+def _main():
     for i in range(256):  # Palette viewer
         print(f"{col(i, True)}{col(0)} {i:3} {RESET}", end="")
         if (i + 1) % 16 == 0:
             print()
+
+if __name__ == "__main__":
+    _main()

@@ -6,3 +6,9 @@ BASE_DIR: Path = Path(__file__).resolve().parent
 
 # Colours
 WHITE: Colour = (255, 255, 255)
+
+# New state
+NEW_STATE: dict = {
+    "name": "",
+    "decks": []
+}

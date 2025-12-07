@@ -1,4 +1,6 @@
-from pathlib import Path
+"""File to manage core assets"""
+
+from pathlib import Path  # TODO: Use this to load images and sounds
 import pygame as pg
 from core.constants import BASE_DIR
 
@@ -16,7 +18,9 @@ class AssetBank:
         raise NotImplementedError
 
 class Sounds(AssetBank):
-    ...
+    def __init__(self) -> None:
+        ...  # TODO: Sound loading
+        self.augment()
 
     def _load(self, name: str) -> pg.mixer.Sound:
         return pg.mixer.Sound(BASE_DIR / "assets" / "images" / name)
