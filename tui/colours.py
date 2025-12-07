@@ -36,10 +36,27 @@ DECK_IDX_COL = LIGHT_GREY
 DECK_NAME_COL = BASE_COL
 
 def _main():
+    print("--- 256-Color Palette ---")
     for i in range(256):  # Palette viewer
         print(f"{col(i, True)}{col(0)} {i:3} {RESET}", end="")
         if (i + 1) % 16 == 0:
             print()
+
+    print("\n--- Application Colour Palette ---")
+    print(f"{WHITE}WHITE: {WHITE}Sample Text{RESET}")
+    print(f"{BASE_COL}BASE_COL: {BASE_COL}Sample Text{RESET}")
+    print(f"{LIGHT_GREY}LIGHT_GREY: {LIGHT_GREY}Sample Text{RESET}")
+    print(f"{DARK_GREY}DARK_GREY: {DARK_GREY}Sample Text{RESET}")
+    print(f"{TITLE_COL}TITLE_COL: {TITLE_COL}Sample Text{RESET}")
+    print(f"{ACCENT_COL}ACCENT_COL: {ACCENT_COL}Sample Text{RESET}")
+    print(f"{SUCCESS_COL}SUCCESS_COL: {SUCCESS_COL}Sample Text{RESET}")
+    print(f"{ERROR_COL}ERROR_COL: {ERROR_COL}Sample Text{RESET}")
+    print(f"{LIGHT_YELLOW}LIGHT_YELLOW: {LIGHT_YELLOW}Sample Text{RESET}")
+    print(f"{CARD_IDX_COL}CARD_IDX_COL: {CARD_IDX_COL}Sample Text{RESET}")
+    print(f"{CARD_TERM_COL}CARD_TERM_COL: {CARD_TERM_COL}Sample Text{RESET}")
+    print(f"{CARD_DEF_COL}CARD_DEF_COL: {CARD_DEF_COL}Sample Text{RESET}")
+    print(f"{DECK_IDX_COL}DECK_IDX_COL: {DECK_IDX_COL}Sample Text{RESET}")
+    print(f"{DECK_NAME_COL}DECK_NAME_COL: {DECK_NAME_COL}Sample Text{RESET}")
 
 if __name__ == "__main__":
     _main()

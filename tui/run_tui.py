@@ -60,7 +60,7 @@ def card_editor(deck: Deck):
                 minimap += " "  # Whitespace every 10th card for visual separation
 
             colour = ACCENT_COL if i==current_idx else col(60) if i%2==0 else col(103)
-            minimap += colour + "▄▄"
+            minimap += colour + "▆▆"
         print(minimap)
 
         print()
