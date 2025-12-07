@@ -3,31 +3,34 @@
 from typing import Self
 from core.objects import (
     JSONConvertible, JSONObject,
-    Deck
+    Deck, ConfigObject
 )
 from core.exceptions import DeckError, DeckNotFoundError, DeckExistsError
 
 class StudyProfile(JSONConvertible):
     """Top-level class for managing state as a whole."""
 
-    def __init__(self, name: str, decks: list[Deck]) -> None:
+    def __init__(self, name: str, decks: list[Deck], config: ConfigObject) -> None:
         super().__init__()
         self.name = name
         self.decks = decks
+        self.config = config
 
     def to_json(self) -> JSONObject:
         """Serialise to dict"""
         return {
             "name": self.name,
-            "decks": [d.to_json() for d in self.decks]
+            "decks": [d.to_json() for d in self.decks],
+            "config": self.config.to_json()
         }
 
     @classmethod
     def from_json(cls, data: JSONObject) -> Self:
         """Create from dict"""
         return cls(
-            data['name'],                                     # type: ignore
-            [Deck.from_json(deck) for deck in data['decks']]  # type: ignore
+            name=data['name'],                                       # type: ignore
+            decks=[Deck.from_json(deck) for deck in data['decks']],  # type: ignore
+            config=ConfigObject.from_json(data['config'])            # type: ignore
         )
 
     def new_deck(self, timestamp: str, name: str) -> None:

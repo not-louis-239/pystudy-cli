@@ -21,6 +21,14 @@ SUCCESS_COL = col(120)
 ERROR_COL = col(210)
 AQUAMARINE = col(48)
 LIGHT_YELLOW = col(229)
+LIGHT_BLUE = col(45)
+
+CARD_IDX_COL = col(195)
+CARD_TERM_COL = LGREY
+CARD_DEF_COL = BASE_COL
+
+DECK_IDX_COL = col(121)
+DECK_NAME_COL = col(189)
 
 def _main():
     for i in range(256):  # Palette viewer

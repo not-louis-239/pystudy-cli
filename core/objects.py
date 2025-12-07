@@ -64,3 +64,25 @@ class Deck(JSONConvertible):
                 for c in cast(list[Card], data["cards"])
             ]
         )
+
+    
+
+class ConfigObject(JSONConvertible):
+    def __init__(
+            self,
+            warn_interrupt: bool
+        ) -> None:
+        self.warn_interrupt = warn_interrupt
+
+    def to_json(self) -> JSONObject:
+        """Serialise to dict"""
+        return {
+            "warn_interrupt": self.warn_interrupt
+        }
+
+    @classmethod
+    def from_json(cls, data: JSONObject) -> Self:
+        """Create from dict"""
+        return cls(
+            warn_interrupt=data['warn_interrupt']  # type: ignore
+        )
