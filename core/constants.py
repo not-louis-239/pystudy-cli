@@ -1,7 +1,7 @@
 from pathlib import Path
 from core.custom_types import Colour
 
-VERSION_NUM: str = "0.1.0"
+VERSION_NUM: str = "0.2.0"
 
 # Base directory
 BASE_DIR: Path = Path(__file__).resolve().parent

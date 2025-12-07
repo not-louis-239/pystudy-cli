@@ -1,5 +1,6 @@
 import sys
 import math
+from typing import Callable
 from readchar import readkey
 from datetime import datetime
 # import pygame as pg
@@ -177,33 +178,55 @@ def deck_menu(profile: StudyProfile, deck: Deck):
             return
 
 def config_menu(profile: StudyProfile):
-    def show_config_entry(setting: object, value: object, alignment: int) -> None:
-        print(f"{DGREY}{f"{setting}:":<{alignment}} {col(50)}{value}")
+    # A config entry is: (label, getter, setter, type)
+    CONFIG_ENTRIES: list[tuple[str, Callable, Callable, type]] = [
+        (
+            "Warn Interrupt on Startup",
+            lambda: profile.config.warn_interrupt,
+            lambda value: setattr(profile.config, "warn_interrupt", value),
+            bool
+        )
+    ]
+
+    current_idx = 0
 
     while True:
         clear_screen()
 
         print(f"{LIGHT_YELLOW}Config{BASE_COL}\n")
-        show_config_entry("Warn Interrupt on Startup", profile.config.warn_interrupt, 29)
+
+        for i, (label, getter, setter, type_) in enumerate(CONFIG_ENTRIES):
+            cursor = f"{AQUAMARINE}> {BASE_COL}" if i == current_idx else "  "
+            value = getter()
+
+            # Formatting
+            print(f"{cursor}{BASE_COL}{label:<29}{col(121)}{value}")
 
         print()
-        print(f"{LGREY}wasd      {BASE_COL}navigate config")
-        print(f"{LGREY}q         {BASE_COL}return")
+        print(f"{LGREY}w/s    {BASE_COL}select")
+        print(f"{LGREY}a/d    {BASE_COL}change")
+        print(f"{LGREY}q      {BASE_COL}return")
 
         key = readkey().lower()
 
-        # TODO: config
         if key == 'w':
-            pass
-        elif key == 'a':
-            pass
+            current_idx = (current_idx - 1) % len(CONFIG_ENTRIES)
+
         elif key == 's':
-            pass
-        elif key == 'd':
-            pass
+            current_idx = (current_idx + 1) % len(CONFIG_ENTRIES)
+
+        elif key == 'a' or key == 'd':
+            label, getter, setter, type_ = CONFIG_ENTRIES[current_idx]
+            value = getter()
+
+            if type_ == bool:
+                setter(not value)
+
+            # future: int, enum, colour, keybind, etc.
 
         elif key == 'q':
             return
+
 
 def input_loop(profile: StudyProfile):
     print(f"{TITLE_COL}Python Study Suite v{VERSION_NUM}{BASE_COL}")
