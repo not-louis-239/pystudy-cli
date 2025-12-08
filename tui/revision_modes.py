@@ -294,7 +294,7 @@ def learn_mode(deck: Deck) -> None:
                 return
         continue
 
-def test_mode(deck: Deck) -> None:  # XXX: can't exit after entering
+def test_mode(deck: Deck) -> None:
     while True:
         if not deck.cards:
             input(f"{ERROR_COL}This deck has no cards to revise! {BASE_COL}(Enter to return)")

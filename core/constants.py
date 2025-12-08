@@ -1,5 +1,12 @@
 from pathlib import Path
 from core.custom_types import Colour
+from tui.colours import col, RESET
+from dataclasses import dataclass
+
+@dataclass
+class FamiliarityLevel:
+    ui_text: str
+    colour_code: str
 
 VERSION_NUM: str = "0.2.0"
 
@@ -18,12 +25,19 @@ NEW_STATE: dict = {
     }
 }
 
-FAMILIARITY_LEVELS: dict[int, str] = {
-    0: "New",
-    1: "Learning",
-    2: "Familiar",
-    3: "Proficient",
-    4: "Mastered"
+FAMILIARITY_LEVELS: dict[int, FamiliarityLevel] = {
+    0: FamiliarityLevel("New", col(207)),
+    1: FamiliarityLevel("Learning", col(141)),
+    2: FamiliarityLevel("Familiar", col(111)),
+    3: FamiliarityLevel("Proficient", col(81)),
+    4: FamiliarityLevel("Mastered", col(122))
 }
 
 NUM_MCQ_OPTIONS = 4
+
+def _main():
+    for idx, level in FAMILIARITY_LEVELS.items():
+        print(f"Familiarity Level {idx}: {level.colour_code}{level.ui_text}{RESET}")
+
+if __name__ == "__main__":
+    _main()

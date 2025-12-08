@@ -40,7 +40,7 @@ def display_status_bar(context_text: str = ""):
         width = 80
 
     version_str = f"Python Study Suite v{VERSION_NUM}"
-    time_str = datetime.now().strftime('%H:%M:%S')
+    time_str = datetime.now().strftime('%H:%M')  # TODO: add to config: show time as 24-hour time (bool)
 
     full_right_str = f"{context_text} | {time_str}" if context_text else time_str
     spacing = width - len(version_str) - len(full_right_str)

@@ -3,10 +3,9 @@ import math
 from typing import Callable
 from readchar import readkey
 from datetime import datetime
+
 from tui.revision_modes import flashcard_mode, learn_mode, test_mode
 from tui.ui_elements import clear_screen, show_hotkey, cursor_input, int_convertible, display_status_bar
-from core import save_data, load_data
-from core import StudyProfile, Deck, Card
 from tui.colours import (
     col, WHITE, LIGHT_GREY, DARK_GREY, BASE_COL, RESET,
     ACCENT_COL,
@@ -15,6 +14,8 @@ from tui.colours import (
     DECK_IDX_COL, DECK_NAME_COL,
 )
 from core.exceptions import DeckExistsError, DeckNotFoundError
+from core import save_data, load_data, StudyProfile, Deck, Card
+from core.constants import FAMILIARITY_LEVELS
 
 def card_editor(deck: Deck):
     current_idx = 0
@@ -133,7 +134,8 @@ def deck_menu(profile: StudyProfile, deck: Deck):
         if deck.cards:
             max_len = int(math.log10(len(deck.cards)))+1
             for i, card in enumerate(deck.cards, start=1):
-                print(f"{CARD_IDX_COL}{i:>{max_len}}. {CARD_TERM_COL}{card.term}")
+                f_lvl = FAMILIARITY_LEVELS[card.familiarity_level]
+                print(f"{CARD_IDX_COL}{i:>{max_len}}. {CARD_TERM_COL}{card.term} {f_lvl.colour_code}[{f_lvl.ui_text}]")
                 print(f"{CARD_DEF_COL}{card.definition}{BASE_COL}")
         else:
             print(f"{BASE_COL}This deck doesn't have any cards yet!")
