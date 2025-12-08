@@ -1,3 +1,5 @@
+# XXX: This module has a chance to break at times.
+
 import random
 import difflib
 from core.objects import Deck
@@ -292,7 +294,7 @@ def learn_mode(deck: Deck) -> None:
                 return
         continue
 
-def test_mode(deck: Deck) -> None:
+def test_mode(deck: Deck) -> None:  # XXX: can't exit after entering
     while True:
         if not deck.cards:
             input(f"{ERROR_COL}This deck has no cards to revise! {BASE_COL}(Enter to return)")
@@ -372,7 +374,7 @@ def test_mode(deck: Deck) -> None:
 
             print(f"{LIGHT_GREY}  Your answer:   {BASE_COL if is_correct else ERROR_COL}{user_answer_text}{RESET}")
             if not is_correct:
-                print(f"{LIGHT_GREY}  Correct answer: {SUCCESS_COL}{q.correct_ans}{RESET}")
+                print(f"{LIGHT_GREY}  Correct answer: {SUCCESS_COL}{q.correct_ans}{RESET}")  # XXX: breaks on MCQs
             print()
 
         # Post-test menu

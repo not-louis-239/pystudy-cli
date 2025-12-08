@@ -248,10 +248,10 @@ def config_menu(profile: StudyProfile):
 def help_menu():
     clear_screen()
     display_status_bar("Help")
-    
+
     print(f"\n{WHITE}How to Use the Program{RESET}")
     print(f"{ACCENT_COL}───────────────────────{RESET}")
-    
+
     print(f"\n{LIGHT_GREY}This program uses two different input methods:{RESET}")
     print(f"  - {WHITE}Menus:{BASE_COL} For navigating menus, press the single key corresponding to the action (e.g., 'n'). You do not need to press Enter.")
     print(f"  - {WHITE}Text Entry:{BASE_COL} When prompted to type (e.g., to name a deck), type your text and press Enter to confirm.")
@@ -270,7 +270,7 @@ def help_menu():
     print(f"  - {LIGHT_GREY}t (rename deck):{BASE_COL} Change the name of the current deck.")
     print(f"  - {LIGHT_GREY}r (revise deck):{BASE_COL} Choose a study mode (Flashcards, Learn, Test).")
     print(f"  - {LIGHT_GREY}q (close deck):{BASE_COL} Return to the main menu.")
-    
+
     input(f"\n{DARK_GREY}(Press Enter to return to the main menu){RESET}")
 
 
@@ -408,7 +408,7 @@ def main():
     else:
         print(f"{ERROR_COL}Unexpected error: {WHITE}{status}{ERROR_COL}. {LIGHT_GREY}Making a new one...{BASE_COL}")
 
-    if profile.config.warn_interrupt:
+    if profile.config.warn_interrupt:  # FIXME: doesn't show
         print(f"{ERROR_COL}\nWARNING: {LIGHT_GREY}Unexpected exits (Ctrl-C, Ctrl-D) may result in data corruption or loss.{RESET}")
 
     # Initial setup

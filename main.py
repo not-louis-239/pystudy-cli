@@ -1,4 +1,5 @@
 from typing import Literal, Callable
+from core.traceback_logger import setup_traceback_logger
 
 UI = Literal["tui", "gui"]
 
@@ -13,6 +14,7 @@ def get_runner(ui: UI) -> Callable[[], None]:
     return _run
 
 def main():
+    setup_traceback_logger()
     runner = get_runner("tui")
     runner()
 
