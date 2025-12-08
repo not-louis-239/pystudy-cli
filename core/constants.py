@@ -25,3 +25,5 @@ FAMILIARITY_LEVELS: dict[int, str] = {
     3: "Proficient",
     4: "Mastered"
 }
+
+NUM_MCQ_OPTIONS = 4

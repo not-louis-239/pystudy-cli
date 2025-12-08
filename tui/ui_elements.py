@@ -30,7 +30,7 @@ def show_hotkey(
         hotkey: str, desc: str, alignment=4,
         hotkey_col=LIGHT_GREY, desc_col=BASE_COL
     ):
-    print(f"{hotkey_col}{hotkey:<{alignment}}{desc_col}{desc}")
+    print(f"{hotkey_col}{hotkey:<{alignment}}{desc_col}{desc}{BASE_COL}")
 
 def display_status_bar(context_text: str = ""):
     """Displays a status bar at the top of the screen."""
@@ -43,8 +43,8 @@ def display_status_bar(context_text: str = ""):
     time_str = datetime.now().strftime('%H:%M:%S')
 
     full_right_str = f"{context_text} | {time_str}" if context_text else time_str
-
     spacing = width - len(version_str) - len(full_right_str)
+
     if spacing < 1:
         spacing = 1
 

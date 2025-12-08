@@ -245,6 +245,35 @@ def config_menu(profile: StudyProfile):
             return
 
 
+def help_menu():
+    clear_screen()
+    display_status_bar("Help")
+    
+    print(f"\n{WHITE}How to Use the Program{RESET}")
+    print(f"{ACCENT_COL}───────────────────────{RESET}")
+    
+    print(f"\n{LIGHT_GREY}This program uses two different input methods:{RESET}")
+    print(f"  - {WHITE}Menus:{BASE_COL} For navigating menus, press the single key corresponding to the action (e.g., 'n'). You do not need to press Enter.")
+    print(f"  - {WHITE}Text Entry:{BASE_COL} When prompted to type (e.g., to name a deck), type your text and press Enter to confirm.")
+
+    print(f"\n{WHITE}Main Menu{RESET}")
+    print(f"{ACCENT_COL}─────────{RESET}")
+    print(f"  - {LIGHT_GREY}n (new deck):{BASE_COL} Create a new, empty deck.")
+    print(f"  - {LIGHT_GREY}e (open deck):{BASE_COL} Open an existing deck to view, edit, or revise its cards.")
+    print(f"  - {LIGHT_GREY}r (delete deck):{BASE_COL} Permanently delete a deck.")
+    print(f"  - {LIGHT_GREY}c (view config):{BASE_COL} Change application settings.")
+    print(f"  - {LIGHT_GREY}q (quit):{BASE_COL} Save your data and exit the program.")
+
+    print(f"\n{WHITE}Deck Menu{RESET}")
+    print(f"{ACCENT_COL}─────────{RESET}")
+    print(f"  - {LIGHT_GREY}e (modify cards):{BASE_COL} Opens the card editor to add, remove, or change cards.")
+    print(f"  - {LIGHT_GREY}t (rename deck):{BASE_COL} Change the name of the current deck.")
+    print(f"  - {LIGHT_GREY}r (revise deck):{BASE_COL} Choose a study mode (Flashcards, Learn, Test).")
+    print(f"  - {LIGHT_GREY}q (close deck):{BASE_COL} Return to the main menu.")
+    
+    input(f"\n{DARK_GREY}(Press Enter to return to the main menu){RESET}")
+
+
 def input_loop(profile: StudyProfile):
     clear_screen()
     display_status_bar(f"Decks: {len(profile.decks)}")
@@ -263,6 +292,7 @@ def input_loop(profile: StudyProfile):
     show_hotkey('e', 'open deck')
     show_hotkey('r', 'delete deck')
     show_hotkey('c', 'view config')
+    show_hotkey('h', 'help')
     show_hotkey('q', 'quit')
     action = cursor_input()
 
@@ -331,6 +361,10 @@ def input_loop(profile: StudyProfile):
     # Config
     elif action == 'c':
         config_menu(profile)
+
+    # Help
+    elif action == 'h':
+        help_menu()
 
     # Quit
     elif action == 'q':
