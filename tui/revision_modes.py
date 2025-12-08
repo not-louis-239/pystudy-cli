@@ -28,7 +28,7 @@ class Question:
         if user_ans is None:
             return False
         if smart_grading:
-            similarity = difflib.SequenceMatcher(None, user_ans.lower(), correct_ans.lower()).ratio()
+            similarity = difflib.SequenceMatcher(None, user_ans.strip().lower(), correct_ans.strip().lower()).ratio()
             return similarity >= strictness
         return user_ans.strip().lower() == correct_ans.strip().lower()
 
@@ -44,7 +44,7 @@ class MCQuestion(Question):
             self, text: str, options: list[str], correct_ans: int):
         self.text = text
         self.options = options
-        self.correct_ans: int | None = correct_ans  # Zero-based indices for MCQs
+        self.correct_ans: int = correct_ans  # Zero-based indices for MCQs
         self.user_ans: int | None = None            # None = no answer selected
 
     def is_correct(self) -> bool:
@@ -400,6 +400,7 @@ def test_mode(deck: Deck) -> None:
             print(f"\n{ACCENT_COL}Question {current_q_idx+1}{DARK_GREY}/{len(questions)}")
             print(f"{BASE_COL}{current_q.text}")
 
+            # MCQs
             if isinstance(current_q, MCQuestion):
                 for i, option in enumerate(current_q.options, 1):
                     print(f"{CARD_IDX_COL}{i}. {CARD_DEF_COL}{option}")
@@ -407,7 +408,8 @@ def test_mode(deck: Deck) -> None:
                 if current_q.user_ans is None:
                     print(f"{DARK_GREY}You haven't entered an answer yet!")
                 else:
-                    print(f"{LIGHT_GREY}Your answer: {BASE_COL}{current_q.user_ans}")
+                    print(f"{LIGHT_GREY}Your answer: {BASE_COL}{current_q.user_ans+1}")
+            # Written questions
             else:
                 print()
                 if current_q.user_ans is None:
@@ -433,8 +435,9 @@ def test_mode(deck: Deck) -> None:
                 if isinstance(current_q, MCQuestion):
                     try:
                         current_q.user_ans = int(new_ans)
-                        if not 1 <= current_q.user_ans < NUM_MCQ_OPTIONS:
+                        if not 1 <= current_q.user_ans <= NUM_MCQ_OPTIONS:
                             raise ValueError
+                        current_q.user_ans -= 1
                     except ValueError:
                         current_q.user_ans = None
                         print(f"{ERROR_COL}Invalid: enter an integer from 1 to {NUM_MCQ_OPTIONS}.")
@@ -458,17 +461,44 @@ def test_mode(deck: Deck) -> None:
         # Score and question display is precomputed outside the display
         # loop to aovid re-computing every keypress and wasting resources.
         score = sum(1 for q in questions if q.is_correct())
+        score_frac = score / len(questions)
         question_display: str = ""
         for i, q in enumerate(questions):
             is_correct = q.is_correct()
             result_icon = f"{SUCCESS_COL}✔" if is_correct else f"{ERROR_COL}✘"
             question_display += f"{result_icon} {WHITE}Q{i+1}: {q.text}{RESET}\n"
 
-            if not q.user_ans:
-                print(f"{DARK_GREY}Question was left unanswered.")
+            # Handle unanswered questions
+            if q.user_ans is None:
+                question_display += f"  {DARK_GREY}Unanswered.{RESET}\n\n"
                 continue
+
+            # Handle MCQs
             if isinstance(q, MCQuestion):
-                print(f"{BASE_COL}Your answer: {...}")  # <-- Gemini, finish the question rendering code HERE.
+                user_idx = q.user_ans
+                correct_idx = q.correct_ans
+                if is_correct:
+                    question_display += f"  {LIGHT_GREY}Your answer:    {SUCCESS_COL}({correct_idx + 1}) {q.options[correct_idx]}{RESET}\n\n"
+                else:
+                    question_display += f"  {LIGHT_GREY}Your answer:    {ERROR_COL}({q.user_ans}) {q.options[user_idx]}{RESET}\n"
+                    question_display += f"  {LIGHT_GREY}Correct answer: {SUCCESS_COL}({correct_idx + 1}) {q.options[correct_idx]}{RESET}\n\n"
+                continue
+
+            # Handle written questions
+            is_exact_match = q.user_ans.strip().lower() == q.correct_ans.strip().lower()
+
+            if is_correct:
+                if is_exact_match:
+                    # Correct and exact match
+                    question_display += f"  {LIGHT_GREY}Your answer:    {SUCCESS_COL}{q.correct_ans}{RESET}\n\n"
+                else:
+                    # Correct due to Smart Grading
+                    question_display += f"  {LIGHT_GREY}Your answer:    {SUCCESS_COL}{q.user_ans}{RESET}\n"
+                    question_display += f"  {LIGHT_GREY}Exact answer:   {SUCCESS_COL}{q.correct_ans}{RESET}\n\n"
+            else:
+                # Incorrect
+                question_display += f"  {LIGHT_GREY}Your answer:    {ERROR_COL}{q.user_ans}{RESET}\n"
+                question_display += f"  {LIGHT_GREY}Correct answer: {SUCCESS_COL}{q.correct_ans}{RESET}\n\n"
 
         # Result display loop
         while True:
@@ -476,9 +506,9 @@ def test_mode(deck: Deck) -> None:
             display_status_bar(f"Test Mode | {deck.name} | Results")
 
             print(f"\n{WHITE}Test Complete!")
-            print(f"{BASE_COL}Your score is {SUCCESS_COL if score == len(questions) else ACCENT_COL}{score}/{len(questions)}{RESET}\n")
+            print(f"{BASE_COL}Your score is {SUCCESS_COL if score == len(questions) else ACCENT_COL}{score}/{len(questions)} {DARK_GREY}({score_frac:.2%}){RESET}\n")
 
-            print(question_display)
+            print(question_display)  # FIXME: Question display sometimes wraps weird
 
             print(f"\n{WHITE}What next?{RESET}")
             # TODO: add retry with same settings option
