@@ -27,10 +27,14 @@ class Question:
     ) -> bool:
         if user_ans is None:
             return False
+
+        user_ans_clean = user_ans.strip().lower()
+        correct_ans_clean = correct_ans.strip().lower()
+
         if smart_grading:
-            similarity = difflib.SequenceMatcher(None, user_ans.strip().lower(), correct_ans.strip().lower()).ratio()
+            similarity = difflib.SequenceMatcher(None, user_ans_clean, correct_ans_clean).ratio()
             return similarity >= strictness
-        return user_ans.strip().lower() == correct_ans.strip().lower()
+        return user_ans_clean == correct_ans_clean
 
     def is_correct(self, smart_grading: bool = False,
                    strictness: float = DEFAULT_SMART_GRADING_STRICTNESS) -> bool:
@@ -45,7 +49,7 @@ class MCQuestion(Question):
         self.text = text
         self.options = options
         self.correct_ans: int = correct_ans  # Zero-based indices for MCQs
-        self.user_ans: int | None = None            # None = no answer selected
+        self.user_ans: int | None = None     # None = no answer selected
 
     def is_correct(self) -> bool:
         if self.user_ans is None:
@@ -218,7 +222,7 @@ def learn_mode(deck: Deck) -> None:
     print(f"{WHITE}Shuffle cards? (y/n) (default: y)")
     shuffle = cursor_input().lower() in ['y', '\n']
 
-    # Get shuffle option
+    # Get smart grading option
     print(f"{WHITE}Enable smart grading? (y/n) (default: y)")
     smart_grading = cursor_input().lower() in ['y', '\n']
 
@@ -282,7 +286,7 @@ def learn_mode(deck: Deck) -> None:
             if is_correct_answer:
                 card.on_correct()
                 print(f"{SUCCESS_COL}Correct!{RESET}")
-                if user_ans == card.definition:
+                if user_ans.strip().lower() == card.definition.strip().lower():
                     print(f"{LIGHT_GREY}Your answer:    {BASE_COL}{card.definition}")
                 else:
                     print(f"{LIGHT_GREY}Your answer:    {BASE_COL}{user_ans}")
@@ -446,9 +450,11 @@ def test_mode(deck: Deck) -> None:
 
             # Submit test
             elif key == 'r':
-                print(f"\n{BASE_COL}Are you sure you want to submit the test? (y/n)")
-                if not all(q.user_ans for q in questions):
-                    print(f"{ACCENT_COL}You have {sum(1 for q in questions if not q.user_ans)} unanswered questions.")
+                print()
+                unanswered_count = sum(1 for q in questions if q.user_ans is None)
+                if unanswered_count > 0:
+                    print(f"{ACCENT_COL}You have {unanswered_count} unanswered question{'s' if unanswered_count > 1 else ''}.")
+                print(f"{BASE_COL}Are you sure you want to submit the test? (y/n)")
                 if cursor_input().lower() == 'y':
                     break
 
@@ -459,7 +465,7 @@ def test_mode(deck: Deck) -> None:
                     return
 
         # Score and question display is precomputed outside the display
-        # loop to aovid re-computing every keypress and wasting resources.
+        # loop to avoid re-computing every keypress and wasting resources.
         score = sum(1 for q in questions if q.is_correct())
         score_frac = score / len(questions)
         question_display: str = ""
@@ -480,7 +486,7 @@ def test_mode(deck: Deck) -> None:
                 if is_correct:
                     question_display += f"  {LIGHT_GREY}Your answer:    {SUCCESS_COL}({correct_idx + 1}) {q.options[correct_idx]}{RESET}\n\n"
                 else:
-                    question_display += f"  {LIGHT_GREY}Your answer:    {ERROR_COL}({q.user_ans}) {q.options[user_idx]}{RESET}\n"
+                    question_display += f"  {LIGHT_GREY}Your answer:    {ERROR_COL}({q.user_ans + 1}) {q.options[user_idx]}{RESET}\n"
                     question_display += f"  {LIGHT_GREY}Correct answer: {SUCCESS_COL}({correct_idx + 1}) {q.options[correct_idx]}{RESET}\n\n"
                 continue
 
