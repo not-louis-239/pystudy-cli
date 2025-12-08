@@ -8,8 +8,7 @@ from tui.revision_modes import flashcard_mode, learn_mode, test_mode
 from tui.ui_elements import clear_screen, show_hotkey, cursor_input, int_convertible, display_status_bar
 from tui.colours import (
     col, WHITE, LIGHT_GREY, DARK_GREY, BASE_COL, RESET,
-    ACCENT_COL,
-    ERROR_COL, SUCCESS_COL,
+    ACCENT_COL, ERROR_COL, SUCCESS_COL, UNANSWERED1_COL, UNANSWERED2_COL,
     CARD_DEF_COL, CARD_IDX_COL, CARD_TERM_COL,
     DECK_IDX_COL, DECK_NAME_COL,
 )
@@ -55,7 +54,7 @@ def card_editor(deck: Deck):
             elif i%10 == 0 and i != 0:
                 minimap += " "  # Whitespace every 10th card for visual separation
 
-            colour = ACCENT_COL if i==current_idx else col(60) if i%2==0 else col(103)
+            colour = ACCENT_COL if i==current_idx else (UNANSWERED2_COL if i%2==0 else UNANSWERED1_COL)
             minimap += colour + "▆▆"
         print(minimap)
 
@@ -171,9 +170,9 @@ def deck_menu(profile: StudyProfile, deck: Deck):
         # Revise deck
         elif action == 'r':
             print(f"\n{WHITE}Select revision mode {LIGHT_GREY}(or press Enter to cancel){WHITE}:")
-            print(f"{LIGHT_GREY}1    {BASE_COL}Flashcards")
-            print(f"{LIGHT_GREY}2    {BASE_COL}Learn")
-            print(f"{LIGHT_GREY}3    {BASE_COL}Practice Test")
+            print(f"{LIGHT_GREY}1    {BASE_COL}flashcards")
+            print(f"{LIGHT_GREY}2    {BASE_COL}learn")
+            print(f"{LIGHT_GREY}3    {BASE_COL}practice test")
 
             try:
                 mode = cursor_input()

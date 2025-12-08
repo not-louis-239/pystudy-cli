@@ -7,6 +7,7 @@ import os
 import sys
 import traceback
 from datetime import datetime
+from core.constants import FALLBACK_STATUS_BAR_WIDTH
 
 # Store the original excepthook
 original_excepthook = sys.excepthook
@@ -30,7 +31,7 @@ def custom_excepthook(exc_type, exc_value, exc_tb):
     try:
         width = os.get_terminal_size().columns
     except OSError:
-        width = 80
+        width = FALLBACK_STATUS_BAR_WIDTH
 
     separator = "=" * width
 

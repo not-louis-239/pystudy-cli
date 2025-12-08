@@ -35,6 +35,13 @@ DECK_IDX_COL = LIGHT_GREY
 DECK_NAME_COL = BASE_COL
 LEARNING_COL = LIGHT_YELLOW
 
+# Minimap colours
+UNANSWERED1_COL = col(239)
+UNANSWERED2_COL = col(242)
+ANSWERED1_COL = col(247)
+ANSWERED2_COL = col(250)
+CURRENT_COL = ACCENT_COL
+
 def _main():
     print("=== 256-Color Palette ===")
     for i in range(256):  # Palette viewer
