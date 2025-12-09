@@ -98,8 +98,8 @@ def flashcard_mode(deck: Deck):
     clear_screen()
     display_status_bar(f"{deck.name} > Flashcards")
 
-    print(f"\n{WHITE}Shuffle cards before starting? (y/n) {BASE_COL}")
-    shuffle: bool = cursor_input().lower() == 'y'
+    shuffle_input = input(f"\n{WHITE}Shuffle cards before starting? (y/n) {ACCENT_COL}").strip().lower()
+    shuffle: bool = shuffle_input == 'y'
     if shuffle:
         random.shuffle(cards_to_review)
 
@@ -134,8 +134,8 @@ def flashcard_mode(deck: Deck):
                 key = cursor_input()
 
                 if key == 'q':
-                    print(f"\n{LIGHT_GREY}Are you sure you want to exit? (y/n)")
-                    if cursor_input().lower() == 'y':
+                    exit_input = input(f"\n{LIGHT_GREY}Are you sure you want to exit? (y/n) {ACCENT_COL}").strip().lower()
+                    if exit_input == 'y':
                         return
                     continue  # Go back to the card display loop
 
@@ -219,12 +219,12 @@ def learn_mode(deck: Deck) -> None:
             print(f"{ERROR_COL}Invalid: please enter an integer between 1 and {len(deck.cards)}.{RESET}")
 
     # Get shuffle option
-    print(f"{WHITE}Shuffle cards? (y/n) (default: y)")
-    shuffle = cursor_input().lower() in ['y', '\n']
+    shuffle_input = input(f"{WHITE}Shuffle cards? (y/n) (default: y) {ACCENT_COL}").strip().lower()
+    shuffle = shuffle_input in ['y', '']
 
     # Get smart grading option
-    print(f"{WHITE}Enable smart grading? (y/n) (default: y)")
-    smart_grading = cursor_input().lower() in ['y', '\n']
+    smart_grading_input = input(f"{WHITE}Enable smart grading? (y/n) (default: y) {ACCENT_COL}").strip().lower()
+    smart_grading = smart_grading_input in ['y', '']
 
     # Main loop
     while True:
@@ -245,8 +245,8 @@ def learn_mode(deck: Deck) -> None:
 
                 # TODO: Add 'keep going' option that preserves progress but starts a new round
                 if choice == 'r':
-                    print(f"\n{BASE_COL}Are you sure you want to reset progress? (y/n)")
-                    reset_progress = cursor_input().lower() == 'y'
+                    reset_progress_input = input(f"\n{BASE_COL}Are you sure you want to reset progress? (y/n) {ACCENT_COL}").strip().lower()
+                    reset_progress = reset_progress_input == 'y'
                     if reset_progress:
                         # Reset mastery
                         for card in deck.cards:
@@ -454,14 +454,14 @@ def test_mode(deck: Deck) -> None:
                 unanswered_count = sum(1 for q in questions if q.user_ans is None)
                 if unanswered_count > 0:
                     print(f"{ACCENT_COL}You have {unanswered_count} unanswered question{'s' if unanswered_count > 1 else ''}.")
-                print(f"{BASE_COL}Are you sure you want to submit the test? (y/n)")
-                if cursor_input().lower() == 'y':
+                submit_input = input(f"{BASE_COL}Are you sure you want to submit the test? (y/n) {ACCENT_COL}").strip().lower()
+                if submit_input == 'y':
                     break
 
             # Quit test
             elif key == 'q':
-                print(f"\n{BASE_COL}Are you sure you want to quit? (you will lose your progress for this test) (y/n)")
-                if cursor_input().lower() == 'y':
+                quit_input = input(f"\n{BASE_COL}Are you sure you want to quit? (you will lose your progress for this test) (y/n) {ACCENT_COL}").strip().lower()
+                if quit_input == 'y':
                     return
 
         # Score and question display is precomputed outside the display

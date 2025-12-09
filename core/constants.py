@@ -7,6 +7,7 @@ from dataclasses import dataclass
 class FamiliarityLevel:
     ui_text: str
     colour_code: str
+    weight: float
 
 VERSION_NUM: str = "0.2.0"
 
@@ -26,11 +27,11 @@ NEW_STATE: dict = {
 }
 
 FAMILIARITY_LEVELS: dict[int, FamiliarityLevel] = {
-    0: FamiliarityLevel("New", col(207)),
-    1: FamiliarityLevel("Learning", col(141)),
-    2: FamiliarityLevel("Familiar", col(111)),
-    3: FamiliarityLevel("Proficient", col(81)),
-    4: FamiliarityLevel("Mastered", col(122))
+    0: FamiliarityLevel("New", col(207), 0),
+    1: FamiliarityLevel("Learning", col(141), 0.15),
+    2: FamiliarityLevel("Familiar", col(111), 0.4),
+    3: FamiliarityLevel("Proficient", col(81), 0.7),
+    4: FamiliarityLevel("Mastered", col(122), 1)
 }
 
 NUM_MCQ_OPTIONS = 4

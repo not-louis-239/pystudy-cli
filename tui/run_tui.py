@@ -23,9 +23,11 @@ def card_editor(deck: Deck):
         clear_screen()
 
         card_count = len(deck.cards)
-        context = f"Editing '{deck.name}'"
+        context = f"{deck.name}"
         if card_count > 0:
-            context += f" | Card {current_idx + 1}/{card_count}"
+            context += f" > Card {current_idx + 1}/{card_count}"
+        else:
+            context += " > No Cards"
         display_status_bar(context)
 
         if not deck.cards:
@@ -91,12 +93,12 @@ def card_editor(deck: Deck):
         # Previous card
         elif key == 'w':
             current_idx -= 1
-            current_idx %= len(deck.cards)
+            current_idx = max(0, current_idx)
 
         # Next card
         elif key == 's':
             current_idx += 1
-            current_idx %= len(deck.cards)
+            current_idx = min(len(deck.cards) - 1, current_idx)
 
         # Move card up
         elif key == 'W':
@@ -127,14 +129,36 @@ def card_editor(deck: Deck):
 def deck_menu(profile: StudyProfile, deck: Deck):
     while True:
         clear_screen(full=True)
-        display_status_bar(f"{deck.name} > {len(deck.cards)} Cards")
+        display_status_bar(f"{deck.name} > {'No' if len(deck.cards) == 0 else len(deck.cards)} Cards")
 
         # Show cards
         if deck.cards:
+            # Calculate card counts and max width
+            card_counts: dict[int, int] = {
+                lvl_int: sum(1 for card in deck.cards if card.familiarity_level == lvl_int)
+                for lvl_int in FAMILIARITY_LEVELS
+            }
+            max_width = max(len(lvl.ui_text) for lvl in FAMILIARITY_LEVELS.values())
+
+            # Calculate study progress
+            total_weight = 0
+            for lvl_int, count in card_counts.items():
+                new_weight = FAMILIARITY_LEVELS[lvl_int].weight * count
+                total_weight += new_weight
+            progress = total_weight / len(deck.cards)
+
+            print(f"{WHITE}Study Progress: {ACCENT_COL}{progress:.2%}")
+            print(f"{WHITE}\nProgress Breakdown")
+
+            for lvl_int, count in card_counts.items():
+                lvl = FAMILIARITY_LEVELS[lvl_int]
+                print(f"{lvl.colour_code}{lvl.ui_text:<{max_width+2}} {BASE_COL}{count} ")
+
+            print(f"{WHITE}\nCards{BASE_COL}")
             max_len = int(math.log10(len(deck.cards)))+1
             for i, card in enumerate(deck.cards, start=1):
                 f_lvl = FAMILIARITY_LEVELS[card.familiarity_level]
-                print(f"{CARD_IDX_COL}{i:>{max_len}}. {CARD_TERM_COL}{card.term} {f_lvl.colour_code}[{f_lvl.ui_text}]")
+                print(f"{CARD_IDX_COL}{i:>{max_len}}. {f_lvl.colour_code}{card.term}")
                 print(f"{CARD_DEF_COL}{card.definition}{BASE_COL}")
         else:
             print(f"{BASE_COL}This deck doesn't have any cards yet!")
@@ -260,14 +284,15 @@ def help_menu():
     print(f"\n{WHITE}Main Menu{RESET}")
     print(f"{ACCENT_COL}─────────{RESET}")
     print(f"  - {LIGHT_GREY}n (new deck):{BASE_COL} Create a new, empty deck.")
-    print(f"  - {LIGHT_GREY}e (open deck):{BASE_COL} Open an existing deck to view, edit, or revise its cards.")
-    print(f"  - {LIGHT_GREY}r (delete deck):{BASE_COL} Permanently delete a deck.")
-    print(f"  - {LIGHT_GREY}c (view config):{BASE_COL} Change application settings.")
+    print(f"  - {LIGHT_GREY}o (open deck):{BASE_COL} Open an existing deck to view, edit, or revise its cards.")
+    print(f"  - {LIGHT_GREY}d (delete deck):{BASE_COL} Permanently delete a deck.")
+    print(f"  - {LIGHT_GREY}s (settings):{BASE_COL} Change application settings.")
+    print(f"  - {LIGHT_GREY}h (help):{BASE_COL} Displays this help menu.")
     print(f"  - {LIGHT_GREY}q (quit):{BASE_COL} Save your data and exit the program.")
 
     print(f"\n{WHITE}Deck Menu{RESET}")
     print(f"{ACCENT_COL}─────────{RESET}")
-    print(f"  - {LIGHT_GREY}e (modify cards):{BASE_COL} Opens the card editor to add, remove, or change cards.")
+    print(f"  - {LIGHT_GREY}m (modify cards):{BASE_COL} Opens the card editor to add, remove, or change cards.")
     print(f"  - {LIGHT_GREY}t (rename deck):{BASE_COL} Change the name of the current deck.")
     print(f"  - {LIGHT_GREY}r (revise deck):{BASE_COL} Choose a study mode (Flashcards, Learn, Test).")
     print(f"  - {LIGHT_GREY}q (close deck):{BASE_COL} Return to the main menu.")
