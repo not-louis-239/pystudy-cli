@@ -2,9 +2,7 @@ __pycache__
 .vscode
 .venv
 .DS_Store
-todo.md
 save_data.json
 GEMINI.md
-status_bar_example.py
+workflow
 traceback.log
-bug_report.md

@@ -56,7 +56,11 @@ def display_status_bar(context_text: str = ""):
         left_ws_len = total_padding // 2
         right_ws_len = total_padding - left_ws_len
 
-        # 3. Assemble and color the final bar
+        # Truncate context if needed
+        if width < 50 and len(context_text) > 20:
+            context_text = context_text[:17] + "..."
+
+        # Assemble and colour final bar
         bar = (
             f"{TITLE_COL}{version_str}{RESET}"
             f"{' ' * left_ws_len}"

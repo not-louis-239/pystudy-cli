@@ -32,13 +32,13 @@ def card_editor(deck: Deck):
             current_idx = 0
             print(f"{LIGHT_GREY}Minimap")
             print(f"{BASE_COL}This deck doesn't have any cards yet!\n")
-            show_hotkey("n", "insert new card", 9)
-            show_hotkey("enter", "exit editor", 9)
+            show_hotkey("n", "insert new card")
+            show_hotkey("q", "exit editor")
 
             key = cursor_input()
             if key == 'n':
                 deck.cards.insert(current_idx + 1, Card('...', '...'))
-            elif key == '\n':
+            elif key == 'q':
                 return
 
             continue
@@ -66,8 +66,8 @@ def card_editor(deck: Deck):
         show_hotkey("shift-w", "move card up", 12)
         show_hotkey("shift-s", "move card down", 12)
         show_hotkey("n", "insert new card", 12)
-        show_hotkey("o", "delete card", 12)
-        show_hotkey("enter", "exit editor", 12)
+        show_hotkey("d", "delete card", 12)
+        show_hotkey("q", "exit editor", 12)
 
         print(f"\n{ACCENT_COL}Term: {LIGHT_GREY}{card.term}")
         print(f"{ACCENT_COL}Def:  {BASE_COL}{card.definition}")
@@ -115,19 +115,19 @@ def card_editor(deck: Deck):
             deck.cards.insert(current_idx + 1, Card('...', '...'))
 
         # Delete card
-        elif key == 'o':
+        elif key == 'd':
             deck.cards.pop(current_idx)
             if current_idx >= len(deck.cards):
                 current_idx -= 1
 
         # Exit editor
-        elif key == '\n':
+        elif key == 'q':
             return
 
 def deck_menu(profile: StudyProfile, deck: Deck):
     while True:
         clear_screen(full=True)
-        display_status_bar(f"Deck: {deck.name} | Cards: {len(deck.cards)}")
+        display_status_bar(f"{deck.name} > {len(deck.cards)} Cards")
 
         # Show cards
         if deck.cards:
@@ -140,14 +140,14 @@ def deck_menu(profile: StudyProfile, deck: Deck):
             print(f"{BASE_COL}This deck doesn't have any cards yet!")
 
         print(f"{WHITE}\nWhat would you like to do?{BASE_COL}")
-        show_hotkey('e', 'modify cards')
+        show_hotkey('m', 'modify cards')
         show_hotkey('t', 'rename deck')
         show_hotkey('r', 'revise deck')
         show_hotkey('q', 'close deck')
         action = cursor_input()
 
         # Add/remove cards
-        if action == 'e':
+        if action == 'm':
             card_editor(deck)
 
         # Rename deck
@@ -196,7 +196,7 @@ def deck_menu(profile: StudyProfile, deck: Deck):
         elif action == 'q':
             return
 
-def config_menu(profile: StudyProfile):
+def settings_menu(profile: StudyProfile):
     # A config entry is: (label, getter, setter, type)
     CONFIG_ENTRIES: list[tuple[str, Callable, Callable, type]] = [
         (
@@ -211,7 +211,7 @@ def config_menu(profile: StudyProfile):
 
     while True:
         clear_screen()
-        display_status_bar("Configuration")
+        display_status_bar("Settings")
 
         for i, (label, getter, setter, type_) in enumerate(CONFIG_ENTRIES):
             cursor = f"{ACCENT_COL}> {BASE_COL}" if i == current_idx else "  "
@@ -274,10 +274,9 @@ def help_menu():
 
     input(f"\n{DARK_GREY}(Press Enter to return to the main menu){RESET}")
 
-
 def input_loop(profile: StudyProfile):
     clear_screen()
-    display_status_bar(f"Decks: {len(profile.decks)}")
+    display_status_bar()
 
     print(f"\n{WHITE}Hi, {col(123)}{profile.name}{WHITE}!{BASE_COL}")
 
@@ -290,9 +289,9 @@ def input_loop(profile: StudyProfile):
 
     print(f"{WHITE}\nWhat would you like to do?{BASE_COL}")
     show_hotkey('n', 'new deck')
-    show_hotkey('e', 'open deck')
-    show_hotkey('r', 'delete deck')
-    show_hotkey('c', 'view config')
+    show_hotkey('o', 'open deck')
+    show_hotkey('d', 'delete deck')
+    show_hotkey('s', 'settings')
     show_hotkey('h', 'help')
     show_hotkey('q', 'quit')
     action = cursor_input()
@@ -313,7 +312,7 @@ def input_loop(profile: StudyProfile):
             input(f"{ERROR_COL}Invalid: Deck name must be unique. {BASE_COL}(Enter to return)")
 
     # Open deck
-    elif action == 'e':
+    elif action == 'o':
         if not profile.decks:
             input(f"{ERROR_COL}\nNo decks to open. {LIGHT_GREY}Try creating one first! {BASE_COL}(Enter to return)")
             return
@@ -346,7 +345,7 @@ def input_loop(profile: StudyProfile):
             return
 
     # Remove deck
-    elif action == 'r':
+    elif action == 'd':
         deck_name = input(f"{LIGHT_GREY}\nEnter deck name to delete (or press Enter to cancel): {ACCENT_COL}").strip()
         if not deck_name:
             return
@@ -359,9 +358,9 @@ def input_loop(profile: StudyProfile):
             except DeckNotFoundError:
                 input(f"{ERROR_COL}Invalid: Deck does not exist. {BASE_COL}(Enter to return)")
 
-    # Config
-    elif action == 'c':
-        config_menu(profile)
+    # Settings
+    elif action == 's':
+        settings_menu(profile)
 
     # Help
     elif action == 'h':
@@ -414,7 +413,7 @@ def main():
 
     # Initial setup
     if not profile.name:
-        name = input(f"{WHITE}\nWhat is your name? {ACCENT_COL}")
+        name = input(f"{WHITE}\nWhat is your name? {ACCENT_COL}")  # TODO: Make name configurable
         profile.name = name
         print()
 

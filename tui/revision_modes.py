@@ -96,7 +96,7 @@ def flashcard_mode(deck: Deck):
     cards_to_review = list(deck.cards)
 
     clear_screen()
-    display_status_bar(f"Flashcards | {deck.name}")
+    display_status_bar(f"{deck.name} > Flashcards")
 
     print(f"\n{WHITE}Shuffle cards before starting? (y/n) {BASE_COL}")
     shuffle: bool = cursor_input().lower() == 'y'
@@ -115,8 +115,8 @@ def flashcard_mode(deck: Deck):
             # Card display loop
             while True:
                 clear_screen()
-                context = (f"Flashcards | {deck.name} | Card {i+1}/{len(cards_to_review)} | "
-                           f"Learning: {len(learning_cards)} | Known: {len(known_cards)}")
+                context = (f"{deck.name} > Flashcards > Card {i+1}/{len(cards_to_review)} > "
+                           f"{len(learning_cards)} Learning | {len(known_cards)} Known")
                 display_status_bar(context)
 
                 # Card UI
@@ -154,7 +154,7 @@ def flashcard_mode(deck: Deck):
         # End of round display loop
         while True:
             clear_screen()
-            display_status_bar(f"Flashcards | {deck.name} | Round Complete")
+            display_status_bar(f"{deck.name} > Flashcards > Round Complete")
             print(f"{SUCCESS_COL}Round Complete!{RESET}\n")
             print(f"{WHITE}* {LEARNING_COL}Learning: {BASE_COL}{len(learning_cards)} cards")
             print(f"{WHITE}* {SUCCESS_COL}Known:    {BASE_COL}{len(known_cards)} cards")
@@ -203,7 +203,7 @@ def learn_mode(deck: Deck) -> None:
     # Config
     while True:
         clear_screen()
-        display_status_bar(f"Learn Mode | {deck.name} | Setup")
+        display_status_bar(f"{deck.name} > Learn Mode > Setup")
 
         # Cards per round
         try:
@@ -235,7 +235,7 @@ def learn_mode(deck: Deck) -> None:
         if not learning_cards:
             while True:
                 clear_screen()
-                display_status_bar(f"Learn Mode | {deck.name} | Complete!")
+                display_status_bar(f"{deck.name} > Learn Mode > Complete!")
                 print(f"{SUCCESS_COL}You've mastered everything!{RESET}")
                 print(f"\n{WHITE}What now?{RESET}")
                 show_hotkey('r', 'reset card progress and restart')
@@ -269,7 +269,7 @@ def learn_mode(deck: Deck) -> None:
         for i, card in enumerate(round_cards):
             # Card UI
             clear_screen()
-            display_status_bar(f"Learn Mode | {deck.name} | Card {i+1}/{len(round_cards)}")
+            display_status_bar(f"{deck.name} > Learn Mode > Card {i+1}/{len(round_cards)}")
             print(f"\n{CARD_TERM_COL}Term:      {BASE_COL}{card.term}\n")
             user_ans = input(f"{WHITE}Your Def: {ACCENT_COL}")
 
@@ -280,7 +280,7 @@ def learn_mode(deck: Deck) -> None:
 
             # Feedback
             clear_screen()
-            display_status_bar(f"Learn Mode | {deck.name} | Card {i+1}/{len(round_cards)}")
+            display_status_bar(f"{deck.name} > Learn Mode > Card {i+1}/{len(round_cards)}")
             print(f"\n{CARD_TERM_COL}Term: {BASE_COL}{card.term}\n")
 
             if is_correct_answer:
@@ -303,7 +303,7 @@ def learn_mode(deck: Deck) -> None:
         # End of round display
         while True:
             clear_screen()
-            display_status_bar(f"Learn Mode | {deck.name} | Round Complete")
+            display_status_bar(f"{deck.name} > Learn Mode > Round Complete")
             print(f"{SUCCESS_COL}Round Complete!{RESET}")
             print("\nWhat next?")
             show_hotkey('c', 'proceed to next round')
@@ -325,7 +325,7 @@ def test_mode(deck: Deck) -> None:
         # Config
         while True:
             clear_screen()
-            display_status_bar(f"Test Mode | {deck.name} | Setup")
+            display_status_bar(f"{deck.name} > Test Mode > Setup")
 
             # Get number of questions
             while True:
@@ -368,7 +368,7 @@ def test_mode(deck: Deck) -> None:
             current_q = questions[current_q_idx]
 
             clear_screen()
-            display_status_bar(f"Test Mode | {deck.name} | Question {current_q_idx+1}/{len(questions)}")
+            display_status_bar(f"{deck.name} > Test Mode > Question {current_q_idx+1}/{len(questions)}")
 
             # Minimap
             print(f"{LIGHT_GREY}Minimap")
@@ -509,7 +509,7 @@ def test_mode(deck: Deck) -> None:
         # Result display loop
         while True:
             clear_screen()
-            display_status_bar(f"Test Mode | {deck.name} | Results")
+            display_status_bar(f"{deck.name} > Test Mode > Results")
 
             print(f"\n{WHITE}Test Complete!")
             print(f"{BASE_COL}Your score is {SUCCESS_COL if score == len(questions) else ACCENT_COL}{score}/{len(questions)} {DARK_GREY}({score_frac:.2%}){RESET}\n")

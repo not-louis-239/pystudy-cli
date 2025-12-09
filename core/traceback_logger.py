@@ -55,7 +55,7 @@ def custom_excepthook(exc_type, exc_value, exc_tb):
         log_file.write(log_message)
 
     # Also print to stderr so the user sees the error in the console
-    print(f"\n{col(197)}!{col(189)}  Oops, something went wrong! Don't worry, it's not your fault!")
+    print(f"\n{col(197)}!{col(189)}  Oops, something went wrong!")
     print(f"{col(220)}i{col(189)}  A 'traceback.log' file has been created.")
     print(f"{col(220)}i{col(189)}  For support, contact Louis @ <...> and attach the 'traceback.log' file.")  # TODO: add contact
     print(f"\n{col(220)}i{col(189)}  Full traceback (for nerds)")
