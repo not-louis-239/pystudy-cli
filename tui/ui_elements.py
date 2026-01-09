@@ -40,7 +40,7 @@ def display_status_bar(context_text: str = ""):
         width = FALLBACK_STATUS_BAR_WIDTH
 
     # 1. Create uncoloured components
-    version_str = f"Python Study Suite v{VERSION_NUM}"
+    version_str = f"PyStudy CLI v{VERSION_NUM}"
     time_str = datetime.now().strftime('%H:%M')
 
     # 2. Calculate layout
