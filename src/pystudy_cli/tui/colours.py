@@ -23,36 +23,36 @@ ITALIC = "\033[3m"
 UNDERLINE = "\033[4m"
 
 # Base palette
-WHITE = col(231)            # Pure white, for highlights
-BASE_COL = col(254)         # Main text colour, a very light grey
-LIGHT_GREY = col(248)       # Lighter grey for secondary text
-DARK_GREY = col(240)        # Darker grey for subtle text/borders
+COL_WHITE = col(231)
+COL_BASE = col(254)
+COL_LIGHT_GREY = col(248)
+COL_DARK_GREY = col(240)
 
 # Theme colours
-TITLE_COL = col(215)        # Primary theme colour (light orange)
-ACCENT_COL = col(222)       # Accent/selection colour (light yellow-orange)
+COL_TITLE = col(215)
+COL_ACCENT = col(222)
 
 # State colours
-SUCCESS_COL = col(77)       # A clear, pleasant green
-ERROR_COL = col(197)        # A clear, unambiguous red
-LIGHT_YELLOW = col(221)     # A mellow yellow for warnings or highlights
+COL_SUCCESS = col(77)
+COL_ERROR = col(197)
+COL_WARNING = col(221)
 
 # Cards
-CARD_IDX_COL = LIGHT_GREY
-CARD_TERM_COL = BASE_COL
-CARD_DEF_COL = LIGHT_GREY
+COL_CARD_INDEX = COL_LIGHT_GREY
+COL_CARD_TERM = COL_BASE
+COL_CARD_DEF = COL_LIGHT_GREY
 
 # Decks
-DECK_IDX_COL = LIGHT_GREY
-DECK_NAME_COL = BASE_COL
-LEARNING_COL = LIGHT_YELLOW
+COL_DECK_INDEX = COL_LIGHT_GREY
+COL_DECK_NAME = COL_BASE
+COL_LEARNING = COL_WARNING
 
 # Minimap colours
-UNANSWERED1_COL = col(239)
-UNANSWERED2_COL = col(242)
-ANSWERED1_COL = col(247)
-ANSWERED2_COL = col(250)
-CURRENT_COL = ACCENT_COL
+COL_UNANSWERED1 = col(239)
+COL_UNANSWERED2 = col(242)
+COL_ANSWERED1 = col(247)
+COL_ANSWERED2 = col(250)
+COL_CURRENT_CARD = COL_ACCENT
 
 def _main():
     print("=== 256-Color Palette ===")
@@ -61,22 +61,33 @@ def _main():
         if (i + 1) % 16 == 0:
             print()
 
-    print("\n=== Application Colour Palette ===")
-    print(f"{WHITE}WHITE: Sample Text{RESET}")
-    print(f"{BASE_COL}BASE_COL: Sample Text{RESET}")
-    print(f"{LIGHT_GREY}LIGHT_GREY: Sample Text{RESET}")
-    print(f"{DARK_GREY}DARK_GREY: Sample Text{RESET}")
-    print(f"{TITLE_COL}TITLE_COL: Sample Text{RESET}")
-    print(f"{ACCENT_COL}ACCENT_COL: Sample Text{RESET}")
-    print(f"{SUCCESS_COL}SUCCESS_COL: Sample Text{RESET}")
-    print(f"{ERROR_COL}ERROR_COL: Sample Text{RESET}")
-    print(f"{LIGHT_YELLOW}LIGHT_YELLOW: Sample Text{RESET}")
-    print(f"{CARD_IDX_COL}CARD_IDX_COL: Sample Text{RESET}")
-    print(f"{CARD_TERM_COL}CARD_TERM_COL: Sample Text{RESET}")
-    print(f"{CARD_DEF_COL}CARD_DEF_COL: Sample Text{RESET}")
-    print(f"{DECK_IDX_COL}DECK_IDX_COL: Sample Text{RESET}")
-    print(f"{DECK_NAME_COL}DECK_NAME_COL: Sample Text{RESET}")
-    print(f"{LEARNING_COL}LEARNING_COL: Sample Text{RESET}")
+    print("\n=== Application Colour Palette ===\n")
+
+    print(f"{COL_WHITE}WHITE: Sample Text{RESET}")
+    print(f"{COL_BASE}BASE_COL: Sample Text{RESET}")
+    print(f"{COL_LIGHT_GREY}LIGHT_GREY: Sample Text{RESET}")
+    print(f"{COL_DARK_GREY}DARK_GREY: Sample Text{RESET}")
+
+    print(f"{COL_TITLE}TITLE_COL: Sample Text{RESET}")
+    print(f"{COL_ACCENT}ACCENT_COL: Sample Text{RESET}\n")
+
+    print(f"{COL_SUCCESS}SUCCESS_COL: Sample Text{RESET}")
+    print(f"{COL_ERROR}ERROR_COL: Sample Text{RESET}")
+    print(f"{COL_WARNING}LIGHT_YELLOW: Sample Text{RESET}\n")
+
+    print(f"{COL_CARD_INDEX}CARD_IDX_COL: Sample Text{RESET}")
+    print(f"{COL_CARD_TERM}CARD_TERM_COL: Sample Text{RESET}")
+    print(f"{COL_CARD_DEF}CARD_DEF_COL: Sample Text{RESET}\n")
+
+    print(f"{COL_DECK_INDEX}DECK_IDX_COL: Sample Text{RESET}")
+    print(f"{COL_DECK_NAME}DECK_NAME_COL: Sample Text{RESET}")
+    print(f"{COL_LEARNING}LEARNING_COL: Sample Text{RESET}\n")
+
+    print(f"{COL_UNANSWERED1}COL_UNANSWERED1: Sample Text{RESET}")
+    print(f"{COL_UNANSWERED2}COL_UNANSWERED2: Sample Text{RESET}")
+    print(f"{COL_ANSWERED1}COL_ANSWERED1: Sample Text{RESET}")
+    print(f"{COL_ANSWERED2}COL_ANSWERED2: Sample Text{RESET}")
+    print(f"{COL_CURRENT_CARD}COL_CURRENT_CARD: Sample Text{RESET}\n")
 
 if __name__ == "__main__":
     _main()

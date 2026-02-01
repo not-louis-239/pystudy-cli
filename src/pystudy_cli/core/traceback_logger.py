@@ -20,6 +20,7 @@ import sys
 import traceback
 from datetime import datetime
 from pystudy_cli.core.constants import FALLBACK_STATUS_BAR_WIDTH
+from pystudy_cli.core import paths
 
 # Store the original excepthook
 original_excepthook = sys.excepthook
@@ -29,6 +30,7 @@ def custom_excepthook(exc_type, exc_value, exc_tb):
     Custom exception hook to log unhandled exceptions to a file,
     ignoring KeyboardInterrupt and EOFError.
     """
+
     # Excepthook has its own copy of the colour function
     def col(code: int, bg: bool = False): # 256 colours
         return f"\033[{48 if bg else 38};5;{code}m"
@@ -63,7 +65,7 @@ def custom_excepthook(exc_type, exc_value, exc_tb):
     )
 
     # Append to the log file
-    with open("traceback.log", "a", encoding="utf-8") as log_file:
+    with open(paths.ROOT_DIR / "traceback.log", "a", encoding="utf-8") as log_file:
         log_file.write(log_message)
 
     # Also print to stderr so the user sees the error in the console
@@ -76,7 +78,5 @@ def custom_excepthook(exc_type, exc_value, exc_tb):
     sys.exit(1)
 
 def setup_traceback_logger():
-    """
-    Assigns the custom exception hook to sys.excepthook.
-    """
+    """Assigns the custom exception hook to sys.excepthook."""
     sys.excepthook = custom_excepthook

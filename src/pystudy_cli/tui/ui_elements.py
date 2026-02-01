@@ -12,7 +12,7 @@
 
 import os
 from readchar import readkey
-from pystudy_cli.tui.colours import LIGHT_GREY, BASE_COL, ACCENT_COL, WHITE, RESET, TITLE_COL
+from pystudy_cli.tui.colours import COL_LIGHT_GREY, COL_BASE, COL_ACCENT, COL_WHITE, RESET, COL_TITLE
 from pystudy_cli.core.constants import FALLBACK_STATUS_BAR_WIDTH
 from datetime import datetime
 
@@ -25,7 +25,7 @@ def int_convertible(string: str) -> bool:
         return False
 
 def cursor_input():
-    print(f"{ACCENT_COL}>{WHITE} ", end='', flush=True)
+    print(f"{COL_ACCENT}>{COL_WHITE} ", end='', flush=True)
     action = readkey()
     print(action)
 
@@ -40,9 +40,9 @@ def clear_screen(full=False) -> None:
 
 def show_hotkey(
         hotkey: str, desc: str, alignment=5,
-        hotkey_col=LIGHT_GREY, desc_col=BASE_COL
+        hotkey_col=COL_LIGHT_GREY, desc_col=COL_BASE
     ):
-    print(f"{hotkey_col}{hotkey:<{alignment}}{desc_col}{desc}{BASE_COL}")
+    print(f"{hotkey_col}{hotkey:<{alignment}}{desc_col}{desc}{COL_BASE}")
 
 def display_status_bar(context_text: str = ""):
     """Displays a status bar at the top of the screen with centered context."""
@@ -74,11 +74,11 @@ def display_status_bar(context_text: str = ""):
 
         # Assemble and colour final bar
         bar = (
-            f"{TITLE_COL}{version_str}{RESET}"
+            f"{COL_TITLE}{version_str}{RESET}"
             f"{' ' * left_ws_len}"
-            f"{BASE_COL}{context_text}{RESET}"
+            f"{COL_BASE}{context_text}{RESET}"
             f"{' ' * right_ws_len}"
-            f"{ACCENT_COL}{time_str}{RESET}"
+            f"{COL_ACCENT}{time_str}{RESET}"
         )
     else:  # No context text, just left and right align version and time
         spacing = width - (len(version_str) + len(time_str))
@@ -86,10 +86,10 @@ def display_status_bar(context_text: str = ""):
             spacing = 0
 
         bar = (
-            f"{TITLE_COL}{version_str}{RESET}"
+            f"{COL_TITLE}{version_str}{RESET}"
             f"{' ' * spacing}"
-            f"{ACCENT_COL}{time_str}{RESET}"
+            f"{COL_ACCENT}{time_str}{RESET}"
         )
 
     print(bar)
-    print(f"{ACCENT_COL}{'─' * width}{RESET}")
+    print(f"{COL_ACCENT}{'─' * width}{RESET}")

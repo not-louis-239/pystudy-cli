@@ -19,10 +19,10 @@ from datetime import datetime
 from pystudy_cli.tui.revision_modes import flashcard_mode, learn_mode, test_mode
 from pystudy_cli.tui.ui_elements import clear_screen, show_hotkey, cursor_input, int_convertible, display_status_bar
 from pystudy_cli.tui.colours import (
-    col, WHITE, LIGHT_GREY, DARK_GREY, BASE_COL, RESET,
-    ACCENT_COL, ERROR_COL, SUCCESS_COL, UNANSWERED1_COL, UNANSWERED2_COL,
-    CARD_DEF_COL, CARD_IDX_COL,
-    DECK_IDX_COL, DECK_NAME_COL,
+    col, COL_WHITE, COL_LIGHT_GREY, COL_DARK_GREY, COL_BASE, RESET,
+    COL_ACCENT, COL_ERROR, COL_SUCCESS, COL_UNANSWERED1, COL_UNANSWERED2,
+    COL_CARD_DEF, COL_CARD_INDEX,
+    COL_DECK_INDEX, COL_DECK_NAME,
 )
 from pystudy_cli.core.exceptions import DeckExistsError, DeckNotFoundError
 from pystudy_cli.core.data_manager import save_data, load_data
@@ -46,8 +46,8 @@ def card_editor(deck: Deck):
 
         if not deck.cards:
             current_idx = 0
-            print(f"{LIGHT_GREY}Minimap")
-            print(f"{BASE_COL}This deck doesn't have any cards yet!\n")
+            print(f"{COL_LIGHT_GREY}Minimap")
+            print(f"{COL_BASE}This deck doesn't have any cards yet!\n")
             show_hotkey("n", "insert new card")
             show_hotkey("q", "exit editor")
 
@@ -61,7 +61,7 @@ def card_editor(deck: Deck):
 
         card = deck.cards[current_idx]
 
-        print(f"{LIGHT_GREY}Minimap")
+        print(f"{COL_LIGHT_GREY}Minimap")
 
         minimap: str = ''
         for i in range(len(deck.cards)):
@@ -70,7 +70,7 @@ def card_editor(deck: Deck):
             elif i%10 == 0 and i != 0:
                 minimap += " "  # Whitespace every 10th card for visual separation
 
-            colour = ACCENT_COL if i==current_idx else (UNANSWERED2_COL if i%2==0 else UNANSWERED1_COL)
+            colour = COL_ACCENT if i==current_idx else (COL_UNANSWERED2 if i%2==0 else COL_UNANSWERED1)
             minimap += colour + "▆▆"
         print(minimap)
 
@@ -85,22 +85,22 @@ def card_editor(deck: Deck):
         show_hotkey("d", "delete card", 12)
         show_hotkey("q", "exit editor", 12)
 
-        print(f"\n{ACCENT_COL}Term: {LIGHT_GREY}{card.term}")
-        print(f"{ACCENT_COL}Def:  {BASE_COL}{card.definition}")
+        print(f"\n{COL_ACCENT}Term: {COL_LIGHT_GREY}{card.term}")
+        print(f"{COL_ACCENT}Def:  {COL_BASE}{card.definition}")
 
         key = cursor_input()
 
         # Edit term
         if key == 'z':
-            print(f"{LIGHT_GREY}\nEnter new term {BASE_COL}(or Enter to cancel)")
-            new_term = input(f"{ACCENT_COL}> {WHITE}").strip()
+            print(f"{COL_LIGHT_GREY}\nEnter new term {COL_BASE}(or Enter to cancel)")
+            new_term = input(f"{COL_ACCENT}> {COL_WHITE}").strip()
             if new_term:
                 card.term = new_term
 
         # Edit definition
         elif key == 'x':
-            print(f"{LIGHT_GREY}\nEnter new definition {BASE_COL}(or Enter to cancel)")
-            new_def = input(f"{ACCENT_COL}> {WHITE}").strip()
+            print(f"{COL_LIGHT_GREY}\nEnter new definition {COL_BASE}(or Enter to cancel)")
+            new_def = input(f"{COL_ACCENT}> {COL_WHITE}").strip()
             if new_def:
                 card.definition = new_def
 
@@ -161,23 +161,23 @@ def deck_menu(profile: StudyProfile, deck: Deck):
                 total_weight += new_weight
             progress = total_weight / len(deck.cards)
 
-            print(f"{WHITE}Study Progress: {ACCENT_COL}{progress:.2%}")
-            print(f"{WHITE}\nProgress Breakdown")
+            print(f"{COL_WHITE}Study Progress: {COL_ACCENT}{progress:.2%}")
+            print(f"{COL_WHITE}\nProgress Breakdown")
 
             for lvl_int, count in card_counts.items():
                 lvl = FAMILIARITY_LEVELS[lvl_int]
-                print(f"{lvl.colour_code}{lvl.ui_text:<{max_width+2}} {BASE_COL}{count} ")
+                print(f"{lvl.colour_code}{lvl.ui_text:<{max_width+2}} {COL_BASE}{count} ")
 
-            print(f"{WHITE}\nCards{BASE_COL}")
+            print(f"{COL_WHITE}\nCards{COL_BASE}")
             max_len = int(math.log10(len(deck.cards)))+1
             for i, card in enumerate(deck.cards, start=1):
                 f_lvl = FAMILIARITY_LEVELS[card.familiarity_level]
-                print(f"{CARD_IDX_COL}{i:>{max_len}}. {f_lvl.colour_code}{card.term}")
-                print(f"{CARD_DEF_COL}{card.definition}{BASE_COL}")
+                print(f"{COL_CARD_INDEX}{i:>{max_len}}. {f_lvl.colour_code}{card.term}")
+                print(f"{COL_CARD_DEF}{card.definition}{COL_BASE}")
         else:
-            print(f"{BASE_COL}This deck doesn't have any cards yet!")
+            print(f"{COL_BASE}This deck doesn't have any cards yet!")
 
-        print(f"{WHITE}\nWhat would you like to do?{BASE_COL}")
+        print(f"{COL_WHITE}\nWhat would you like to do?{COL_BASE}")
         show_hotkey('m', 'modify cards')
         show_hotkey('t', 'rename deck')
         show_hotkey('r', 'revise deck')
@@ -190,27 +190,27 @@ def deck_menu(profile: StudyProfile, deck: Deck):
 
         # Rename deck
         elif action == 't':
-            new_name = input(f"{LIGHT_GREY}\nEnter new name (or press Enter to cancel): {ACCENT_COL}").strip()
+            new_name = input(f"{COL_LIGHT_GREY}\nEnter new name (or press Enter to cancel): {COL_ACCENT}").strip()
             if not new_name:
                 continue
 
             if int_convertible(new_name):
-                input(f"{ERROR_COL}Invalid: Deck name cannot be a pure integer! {BASE_COL}(Enter to return)")
+                input(f"{COL_ERROR}Invalid: Deck name cannot be a pure integer! {COL_BASE}(Enter to return)")
                 continue
 
             existing_names = {d.name for d in profile.decks if d is not deck}
             if new_name in existing_names:
-                input(f"{ERROR_COL}Invalid: That deck name is already taken by another deck! {BASE_COL}(Enter to return)")
+                input(f"{COL_ERROR}Invalid: That deck name is already taken by another deck! {COL_BASE}(Enter to return)")
                 continue
 
             deck.name = new_name
 
         # Revise deck
         elif action == 'r':
-            print(f"\n{WHITE}Select revision mode {LIGHT_GREY}(or press Enter to cancel){WHITE}:")
-            print(f"{LIGHT_GREY}1    {BASE_COL}flashcards")
-            print(f"{LIGHT_GREY}2    {BASE_COL}learn")
-            print(f"{LIGHT_GREY}3    {BASE_COL}practice test")
+            print(f"\n{COL_WHITE}Select revision mode {COL_LIGHT_GREY}(or press Enter to cancel){COL_WHITE}:")
+            print(f"{COL_LIGHT_GREY}1    {COL_BASE}flashcards")
+            print(f"{COL_LIGHT_GREY}2    {COL_BASE}learn")
+            print(f"{COL_LIGHT_GREY}3    {COL_BASE}practice test")
 
             try:
                 mode = cursor_input()
@@ -220,7 +220,7 @@ def deck_menu(profile: StudyProfile, deck: Deck):
                 if not 1 <= mode <= 3:
                     raise ValueError
             except ValueError:
-                input(f"{ERROR_COL}Invalid mode. {BASE_COL}(Enter to return)")
+                input(f"{COL_ERROR}Invalid mode. {COL_BASE}(Enter to return)")
                 continue
 
             if mode == 1:
@@ -252,16 +252,16 @@ def settings_menu(profile: StudyProfile):
         display_status_bar("Settings")
 
         for i, (label, getter, setter, type_) in enumerate(CONFIG_ENTRIES):
-            cursor = f"{ACCENT_COL}> {BASE_COL}" if i == current_idx else "  "
+            cursor = f"{COL_ACCENT}> {COL_BASE}" if i == current_idx else "  "
             value = getter()
 
             # Formatting
-            print(f"{cursor}{BASE_COL}{label:<29}{col(121)}{value}")
+            print(f"{cursor}{COL_BASE}{label:<29}{col(121)}{value}")
 
         print()
-        print(f"{LIGHT_GREY}w/s    {BASE_COL}select")
-        print(f"{LIGHT_GREY}a/d    {BASE_COL}change")
-        print(f"{LIGHT_GREY}q      {BASE_COL}return")
+        print(f"{COL_LIGHT_GREY}w/s    {COL_BASE}select")
+        print(f"{COL_LIGHT_GREY}a/d    {COL_BASE}change")
+        print(f"{COL_LIGHT_GREY}q      {COL_BASE}return")
 
         key = readkey().lower()
 
@@ -288,45 +288,45 @@ def help_menu():
     clear_screen()
     display_status_bar("Help")
 
-    print(f"\n{WHITE}How to Use the Program{RESET}")
-    print(f"{ACCENT_COL}───────────────────────{RESET}")
+    print(f"\n{COL_WHITE}How to Use the Program{RESET}")
+    print(f"{COL_ACCENT}───────────────────────{RESET}")
 
-    print(f"\n{LIGHT_GREY}This program uses two different input methods:{RESET}")
-    print(f"  - {WHITE}Menus:{BASE_COL} For navigating menus, press the single key corresponding to the action (e.g., 'n'). You do not need to press Enter.")
-    print(f"  - {WHITE}Text Entry:{BASE_COL} When prompted to type (e.g., to name a deck), type your text and press Enter to confirm.")
+    print(f"\n{COL_LIGHT_GREY}This program uses two different input methods:{RESET}")
+    print(f"  - {COL_WHITE}Menus:{COL_BASE} For navigating menus, press the single key corresponding to the action (e.g., 'n'). You do not need to press Enter.")
+    print(f"  - {COL_WHITE}Text Entry:{COL_BASE} When prompted to type (e.g., to name a deck), type your text and press Enter to confirm.")
 
-    print(f"\n{WHITE}Main Menu{RESET}")
-    print(f"{ACCENT_COL}─────────{RESET}")
-    print(f"  - {LIGHT_GREY}n (new deck):{BASE_COL} Create a new, empty deck.")
-    print(f"  - {LIGHT_GREY}o (open deck):{BASE_COL} Open an existing deck to view, edit, or revise its cards.")
-    print(f"  - {LIGHT_GREY}d (delete deck):{BASE_COL} Permanently delete a deck.")
-    print(f"  - {LIGHT_GREY}s (settings):{BASE_COL} Change application settings.")
-    print(f"  - {LIGHT_GREY}h (help):{BASE_COL} Displays this help menu.")
-    print(f"  - {LIGHT_GREY}q (quit):{BASE_COL} Save your data and exit the program.")
+    print(f"\n{COL_WHITE}Main Menu{RESET}")
+    print(f"{COL_ACCENT}─────────{RESET}")
+    print(f"  - {COL_LIGHT_GREY}n (new deck):{COL_BASE} Create a new, empty deck.")
+    print(f"  - {COL_LIGHT_GREY}o (open deck):{COL_BASE} Open an existing deck to view, edit, or revise its cards.")
+    print(f"  - {COL_LIGHT_GREY}d (delete deck):{COL_BASE} Permanently delete a deck.")
+    print(f"  - {COL_LIGHT_GREY}s (settings):{COL_BASE} Change application settings.")
+    print(f"  - {COL_LIGHT_GREY}h (help):{COL_BASE} Displays this help menu.")
+    print(f"  - {COL_LIGHT_GREY}q (quit):{COL_BASE} Save your data and exit the program.")
 
-    print(f"\n{WHITE}Deck Menu{RESET}")
-    print(f"{ACCENT_COL}─────────{RESET}")
-    print(f"  - {LIGHT_GREY}m (modify cards):{BASE_COL} Opens the card editor to add, remove, or change cards.")
-    print(f"  - {LIGHT_GREY}t (rename deck):{BASE_COL} Change the name of the current deck.")
-    print(f"  - {LIGHT_GREY}r (revise deck):{BASE_COL} Choose a study mode (Flashcards, Learn, Test).")
-    print(f"  - {LIGHT_GREY}q (close deck):{BASE_COL} Return to the main menu.")
+    print(f"\n{COL_WHITE}Deck Menu{RESET}")
+    print(f"{COL_ACCENT}─────────{RESET}")
+    print(f"  - {COL_LIGHT_GREY}m (modify cards):{COL_BASE} Opens the card editor to add, remove, or change cards.")
+    print(f"  - {COL_LIGHT_GREY}t (rename deck):{COL_BASE} Change the name of the current deck.")
+    print(f"  - {COL_LIGHT_GREY}r (revise deck):{COL_BASE} Choose a study mode (Flashcards, Learn, Test).")
+    print(f"  - {COL_LIGHT_GREY}q (close deck):{COL_BASE} Return to the main menu.")
 
-    input(f"\n{DARK_GREY}(Press Enter to return to the main menu){RESET}")
+    input(f"\n{COL_DARK_GREY}(Press Enter to return to the main menu){RESET}")
 
 def input_loop(profile: StudyProfile):
     clear_screen()
     display_status_bar()
 
-    print(f"\n{WHITE}Hi, {col(123)}{profile.name}{WHITE}!{BASE_COL}")
+    print(f"\n{COL_WHITE}Hi, {col(123)}{profile.name}{COL_WHITE}!{COL_BASE}")
 
-    print(f"{WHITE}\nDecks{BASE_COL}")
+    print(f"{COL_WHITE}\nDecks{COL_BASE}")
     if not profile.decks:
         print(f"You don't have any decks yet!")
     else:
         for i, deck in enumerate(profile.decks, 1):
-            print(f"{DECK_IDX_COL}{i}. {DECK_NAME_COL}{deck.name} {DARK_GREY}({len(deck.cards)} cards)")
+            print(f"{COL_DECK_INDEX}{i}. {COL_DECK_NAME}{deck.name} {COL_DARK_GREY}({len(deck.cards)} cards)")
 
-    print(f"{WHITE}\nWhat would you like to do?{BASE_COL}")
+    print(f"{COL_WHITE}\nWhat would you like to do?{COL_BASE}")
     show_hotkey('n', 'new deck')
     show_hotkey('o', 'open deck')
     show_hotkey('d', 'delete deck')
@@ -337,26 +337,26 @@ def input_loop(profile: StudyProfile):
 
     # New deck
     if action == 'n':
-        deck_name = input(f"{LIGHT_GREY}\nEnter deck name (or press Enter to cancel): {ACCENT_COL}").strip()
+        deck_name = input(f"{COL_LIGHT_GREY}\nEnter deck name (or press Enter to cancel): {COL_ACCENT}").strip()
         if not deck_name:
             return
         if int_convertible(deck_name):
-            input(f"{ERROR_COL}Invalid: Deck name cannot be a pure integer! {BASE_COL}(Enter to return)")
+            input(f"{COL_ERROR}Invalid: Deck name cannot be a pure integer! {COL_BASE}(Enter to return)")
             return
 
         try:
             profile.new_deck(datetime.now().isoformat(), deck_name)
-            input(f"{WHITE}Deck {ACCENT_COL}{deck_name}{WHITE} created. {BASE_COL}(Enter to return)")
+            input(f"{COL_WHITE}Deck {COL_ACCENT}{deck_name}{COL_WHITE} created. {COL_BASE}(Enter to return)")
         except DeckExistsError:
-            input(f"{ERROR_COL}Invalid: Deck name must be unique. {BASE_COL}(Enter to return)")
+            input(f"{COL_ERROR}Invalid: Deck name must be unique. {COL_BASE}(Enter to return)")
 
     # Open deck
     elif action == 'o':
         if not profile.decks:
-            input(f"{ERROR_COL}\nNo decks to open. {LIGHT_GREY}Try creating one first! {BASE_COL}(Enter to return)")
+            input(f"{COL_ERROR}\nNo decks to open. {COL_LIGHT_GREY}Try creating one first! {COL_BASE}(Enter to return)")
             return
 
-        deck_name = input(f"\n{LIGHT_GREY}Enter the name (or index) of a deck to open (or press Enter to cancel): {ACCENT_COL}").strip()
+        deck_name = input(f"\n{COL_LIGHT_GREY}Enter the name (or index) of a deck to open (or press Enter to cancel): {COL_ACCENT}").strip()
         if not deck_name:
             return
 
@@ -374,28 +374,28 @@ def input_loop(profile: StudyProfile):
         except ValueError:
             deck = next((deck for deck in profile.decks if deck.name == deck_name), None)
             if deck is None:
-                input(f"{ERROR_COL}That deck doesn't exist!{BASE_COL} (Enter to return)")
+                input(f"{COL_ERROR}That deck doesn't exist!{COL_BASE} (Enter to return)")
                 return
             deck_menu(profile, deck)
 
         # Invalid index
         except IndexError:
-            input(f"{ERROR_COL}Invalid index! (must be an integer from 1 to {len(profile.decks)}) {BASE_COL}(Enter to return)")
+            input(f"{COL_ERROR}Invalid index! (must be an integer from 1 to {len(profile.decks)}) {COL_BASE}(Enter to return)")
             return
 
     # Remove deck
     elif action == 'd':
-        deck_name = input(f"{LIGHT_GREY}\nEnter deck name to delete (or press Enter to cancel): {ACCENT_COL}").strip()
+        deck_name = input(f"{COL_LIGHT_GREY}\nEnter deck name to delete (or press Enter to cancel): {COL_ACCENT}").strip()
         if not deck_name:
             return
 
-        confirm = input(f"{LIGHT_GREY}Are you sure you want to delete this deck (this action cannot be undone)? (y/n) {ACCENT_COL}").strip().lower()
+        confirm = input(f"{COL_LIGHT_GREY}Are you sure you want to delete this deck (this action cannot be undone)? (y/n) {COL_ACCENT}").strip().lower()
         if confirm == 'y':
             try:
                 profile.remove_deck(deck_name)
-                input(f"{WHITE}Deck {ACCENT_COL}{deck_name}{WHITE} removed. {BASE_COL}(Enter to return)")
+                input(f"{COL_WHITE}Deck {COL_ACCENT}{deck_name}{COL_WHITE} removed. {COL_BASE}(Enter to return)")
             except DeckNotFoundError:
-                input(f"{ERROR_COL}Invalid: Deck does not exist. {BASE_COL}(Enter to return)")
+                input(f"{COL_ERROR}Invalid: Deck does not exist. {COL_BASE}(Enter to return)")
 
     # Settings
     elif action == 's':
@@ -407,52 +407,52 @@ def input_loop(profile: StudyProfile):
 
     # Quit
     elif action == 'q':
-        print(f"{LIGHT_GREY}\nAre you sure you want to quit?")
-        print(f"{BASE_COL}(q - quit | other - return)")
+        print(f"{COL_LIGHT_GREY}\nAre you sure you want to quit?")
+        print(f"{COL_BASE}(q - quit | other - return)")
         confirm = cursor_input()
 
         if confirm == 'q':
-            print(f"{BASE_COL}\nSaving data and exiting...")
+            print(f"{COL_BASE}\nSaving data and exiting...")
 
             while True:
                 status = save_data(profile)
                 if status is None:
-                    print(f"{SUCCESS_COL}Data saved!")
+                    print(f"{COL_SUCCESS}Data saved!")
                     break
 
                 retry = input(
-                    f"{ERROR_COL}Saving data failed: {WHITE}{status}{ERROR_COL}. "
-                    f"{LIGHT_GREY}Retry? (y/n) {WHITE}"
+                    f"{COL_ERROR}Saving data failed: {COL_WHITE}{status}{COL_ERROR}. "
+                    f"{COL_LIGHT_GREY}Retry? (y/n) {COL_WHITE}"
                 ).strip().lower()
                 if retry != 'y':
-                    print(f"{BASE_COL}Exiting without saving...")
+                    print(f"{COL_BASE}Exiting without saving...")
                     break
 
-            print(f"{BASE_COL}Goodbye!\033[0m")
+            print(f"{COL_BASE}Goodbye!\033[0m")
             sys.exit(0)
 
 def main():
     # Load data
     clear_screen()
-    print(f"{DARK_GREY}Loading data...{BASE_COL}")
+    print(f"{COL_DARK_GREY}Loading data...{COL_BASE}")
     profile, status = load_data()
 
     if status == "success":
-        print(f"{SUCCESS_COL}Data loaded!{BASE_COL}")
+        print(f"{COL_SUCCESS}Data loaded!{COL_BASE}")
     elif status == "new":
-        print(f"{ERROR_COL}No data file found. {LIGHT_GREY}Making a new one...{BASE_COL}")
+        print(f"{COL_ERROR}No data file found. {COL_LIGHT_GREY}Making a new one...{COL_BASE}")
     elif status == "corrupted":
-        print(f"{ERROR_COL}Data file seems corrupted. {LIGHT_GREY}Making a new one...{BASE_COL}")
+        print(f"{COL_ERROR}Data file seems corrupted. {COL_LIGHT_GREY}Making a new one...{COL_BASE}")
     else:
-        print(f"{ERROR_COL}Unexpected error: {WHITE}{status}{ERROR_COL}. {LIGHT_GREY}Making a new one...{BASE_COL}")
+        print(f"{COL_ERROR}Unexpected error: {COL_WHITE}{status}{COL_ERROR}. {COL_LIGHT_GREY}Making a new one...{COL_BASE}")
 
     if profile.config.warn_interrupt:  # FIXME: doesn't show
-        print(f"{ERROR_COL}\nWARNING: {LIGHT_GREY}Unexpected exits (Ctrl-C, Ctrl-D) may result in data corruption or loss.{RESET}")
+        print(f"{COL_ERROR}\nWARNING: {COL_LIGHT_GREY}Unexpected exits (Ctrl-C, Ctrl-D) may result in data corruption or loss.{RESET}")
 
     # Initial setup
     if not profile.name:
         try:
-            name = input(f"{WHITE}\nWhat is your name? {ACCENT_COL}")  # TODO: Make name configurable in settings
+            name = input(f"{COL_WHITE}\nWhat is your name? {COL_ACCENT}")  # TODO: Make name configurable in settings
         except (KeyboardInterrupt, EOFError):
             print(f"\n{RESET}Exited.")
             sys.exit(0)
@@ -466,15 +466,15 @@ def main():
             input_loop(profile)
             save_data(profile)
         except (KeyboardInterrupt, EOFError):
-            print(f"{ERROR_COL}Interrupted!")
-            print(f"\n{LIGHT_GREY}Attempting panic save...{BASE_COL}")
+            print(f"{COL_ERROR}Interrupted!")
+            print(f"\n{COL_LIGHT_GREY}Attempting panic save...{COL_BASE}")
 
             try:
                 save_data(profile)
-                print(f"{SUCCESS_COL}Data saved! {RESET}But don't push your luck next time!")
-                print(f"{ERROR_COL}Panic save may contain malformed data.")
+                print(f"{COL_SUCCESS}Data saved! {RESET}But don't push your luck next time!")
+                print(f"{COL_ERROR}Panic save may contain malformed data.")
             except Exception:
-                print(f"{ERROR_COL}Panic save failed. Your fault bucko!{RESET}")
+                print(f"{COL_ERROR}Panic save failed. Your fault bucko!{RESET}")
             finally:
                 sys.exit(1)
 
