@@ -14,7 +14,7 @@
 
 # from pathlib import Path  # TODO: Use this to load images and sounds
 import pygame as pg
-from core.constants import BASE_DIR
+from core.constants import ROOT_DIR
 
 class AssetBank:
     def __init__(self) -> None:
@@ -34,4 +34,4 @@ class Sounds(AssetBank):
         self.augment()
 
     def _load(self, name: str) -> pg.mixer.Sound:
-        return pg.mixer.Sound(BASE_DIR / "assets" / "images" / name)
+        return pg.mixer.Sound(ROOT_DIR / "assets" / "images" / name)

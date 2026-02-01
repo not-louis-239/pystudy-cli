@@ -15,8 +15,9 @@
 import json
 import copy
 from core.constants import NEW_STATE
+from core.asset_manager import ROOT_DIR
 
-def save_data(data: dict, filename="save_data.json") -> str:
+def save_data(data: dict, filename = ROOT_DIR / "save_data.json") -> str:
     """
     WARNING: data must be serialised first or else this function
     will throw an exception and potentially corrupt save data.
@@ -30,7 +31,7 @@ def save_data(data: dict, filename="save_data.json") -> str:
     except Exception as e:
         return str(e)
 
-def load_data(filename="save_data.json") -> tuple[dict, str]:
+def load_data(filename = ROOT_DIR / "save_data.json") -> tuple[dict, str]:
     """
     Load JSON data from a file and sync keys with NEW_STATE.
 
