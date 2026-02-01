@@ -14,22 +14,30 @@
 
 import json
 import copy
+from pathlib import Path
 from core.constants import NEW_STATE
 from core.asset_manager import ROOT_DIR
 
-def save_data(data: dict, filename = ROOT_DIR / "save_data.json") -> str:
+def save_data(data: dict, path: Path = ROOT_DIR / "save_data.json") -> str | None:
     """
-    WARNING: data must be serialised first or else this function
-    will throw an exception and potentially corrupt save data.
+    WARNING: data must be serialised first.
 
-    Returns a string status code to indicate success or error
+    Return None if success, else return error description.
     """
     try:
-        with open(filename, "w", encoding="utf-8") as f:
+        path.parent.mkdir(parents=True, exist_ok=True) # Ensure parent directories exist
+
+        # Write to temporary file to avoid corruption
+        # if the program errors mid-write
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        with tmp.open("w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
-        return "success"
+        tmp.replace(path)
+        
     except Exception as e:
         return str(e)
+
+    return None
 
 def load_data(filename = ROOT_DIR / "save_data.json") -> tuple[dict, str]:
     """
