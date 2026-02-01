@@ -24,7 +24,7 @@ class FamiliarityLevel:
 VERSION_NUM: str = "0.2.0"
 
 # Base directory
-ROOT_DIR: Path = Path(__file__).resolve().parent
+ROOT_DIR: Path = Path(__file__).resolve().parents[1]
 
 # Colours
 WHITE: Colour = (255, 255, 255)

@@ -426,7 +426,7 @@ def input_loop(profile: StudyProfile):
                     print(f"{BASE_COL}Exiting without saving...")
                     break
 
-            print(f"{BASE_COL}Goodbye!")
+            print(f"{BASE_COL}Goodbye!\033[0m")
             sys.exit(0)
 
 def main():
@@ -450,7 +450,12 @@ def main():
 
     # Initial setup
     if not profile.name:
-        name = input(f"{WHITE}\nWhat is your name? {ACCENT_COL}")  # TODO: Make name configurable
+        try:
+            name = input(f"{WHITE}\nWhat is your name? {ACCENT_COL}")  # TODO: Make name configurable in settings
+        except (KeyboardInterrupt, EOFError):
+            print(f"\n{RESET}Exited.")
+            sys.exit(0)
+
         profile.name = name
         print()
 
