@@ -21,11 +21,13 @@ from pystudy_cli.tui.ui_elements import clear_screen, show_hotkey, cursor_input,
 from pystudy_cli.tui.colours import (
     col, WHITE, LIGHT_GREY, DARK_GREY, BASE_COL, RESET,
     ACCENT_COL, ERROR_COL, SUCCESS_COL, UNANSWERED1_COL, UNANSWERED2_COL,
-    CARD_DEF_COL, CARD_IDX_COL, CARD_TERM_COL,
+    CARD_DEF_COL, CARD_IDX_COL,
     DECK_IDX_COL, DECK_NAME_COL,
 )
 from pystudy_cli.core.exceptions import DeckExistsError, DeckNotFoundError
-from pystudy_cli.core import save_data, load_data, StudyProfile, Deck, Card
+from pystudy_cli.core.data_manager import save_data, load_data
+from pystudy_cli.core.objects import Deck, Card
+from pystudy_cli.core.profile import StudyProfile
 from pystudy_cli.core.constants import FAMILIARITY_LEVELS
 
 def card_editor(deck: Deck):

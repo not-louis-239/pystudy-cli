@@ -10,7 +10,6 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
-from pathlib import Path
 from dataclasses import dataclass
 
 from pystudy_cli.core.custom_types import Colour
@@ -21,11 +20,6 @@ class FamiliarityLevel:
     ui_text: str
     colour_code: str
     weight: float
-
-VERSION_NUM: str = "0.2.0"
-
-# Colours
-WHITE: Colour = (255, 255, 255)
 
 # New state for the first time the program runs
 NEW_STATE: dict = {

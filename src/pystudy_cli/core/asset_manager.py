@@ -12,9 +12,8 @@
 
 """File to manage core assets"""
 
-# from pathlib import Path  # TODO: Use this to load images and sounds
 import pygame as pg
-from pystudy_cli.core.paths import ROOT_DIR
+from pystudy_cli.core import paths
 
 class AssetBank:
     def __init__(self) -> None:
@@ -31,7 +30,11 @@ class AssetBank:
 
 class Sounds(AssetBank):
     def __init__(self) -> None:
+        self.wrong_answer = self._load("wrong_answer.ogg")
+        self.correct_answer = self._load("correct_answer.ogg")
+        self.click = self._load("button_click.ogg")
+
         self.augment()
 
     def _load(self, name: str) -> pg.mixer.Sound:
-        return pg.mixer.Sound(ROOT_DIR / "assets" / "images" / name)
+        return pg.mixer.Sound(paths.SOUNDS_DIR / name)

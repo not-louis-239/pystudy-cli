@@ -14,3 +14,7 @@ from pathlib import Path
 
 # Base directory
 ROOT_DIR: Path = Path(__file__).resolve().parents[3]
+
+# Asset directories
+ASSETS_DIR: Path = ROOT_DIR / "assets"
+SOUNDS_DIR: Path = ASSETS_DIR / "sounds"

@@ -9,7 +9,3 @@
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-
-from .data_manager import save_data, load_data
-from .objects import Deck, Card
-from .profile import StudyProfile

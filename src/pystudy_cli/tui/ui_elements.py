@@ -13,7 +13,7 @@
 import os
 from readchar import readkey
 from pystudy_cli.tui.colours import LIGHT_GREY, BASE_COL, ACCENT_COL, WHITE, RESET, TITLE_COL
-from pystudy_cli.core.constants import VERSION_NUM, FALLBACK_STATUS_BAR_WIDTH
+from pystudy_cli.core.constants import FALLBACK_STATUS_BAR_WIDTH
 from datetime import datetime
 
 def int_convertible(string: str) -> bool:
@@ -52,7 +52,7 @@ def display_status_bar(context_text: str = ""):
         width = FALLBACK_STATUS_BAR_WIDTH
 
     # 1. Create uncoloured components
-    version_str = f"PyStudy CLI v{VERSION_NUM}"
+    version_str = f"PyStudy CLI"
     time_str = datetime.now().strftime('%H:%M')
 
     # 2. Calculate layout
