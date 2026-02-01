@@ -11,9 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 from pathlib import Path
-from core.custom_types import Colour
-from tui.colours import col, RESET
 from dataclasses import dataclass
+
+from pystudy_cli.core.custom_types import Colour
+from pystudy_cli.tui.colours import col, RESET
 
 @dataclass
 class FamiliarityLevel:
@@ -22,9 +23,6 @@ class FamiliarityLevel:
     weight: float
 
 VERSION_NUM: str = "0.2.0"
-
-# Base directory
-ROOT_DIR: Path = Path(__file__).resolve().parents[1]
 
 # Colours
 WHITE: Colour = (255, 255, 255)

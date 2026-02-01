@@ -12,8 +12,8 @@
 
 import os
 from readchar import readkey
-from tui.colours import LIGHT_GREY, BASE_COL, ACCENT_COL, WHITE, RESET, TITLE_COL
-from core.constants import VERSION_NUM, FALLBACK_STATUS_BAR_WIDTH
+from pystudy_cli.tui.colours import LIGHT_GREY, BASE_COL, ACCENT_COL, WHITE, RESET, TITLE_COL
+from pystudy_cli.core.constants import VERSION_NUM, FALLBACK_STATUS_BAR_WIDTH
 from datetime import datetime
 
 def int_convertible(string: str) -> bool:

@@ -13,8 +13,8 @@
 import pygame as pg
 from pathlib import Path
 from typing import Literal
-from core.custom_types import Surface, Coord2, Colour, AColour
-from core.constants import WHITE
+from pystudy_cli.core.custom_types import Surface, Coord2, Colour, AColour
+from pystudy_cli.core.constants import WHITE
 
 def draw_text(surface: Surface, pos: Coord2,
               horiz_align: Literal["left", "centre", "right"],

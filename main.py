@@ -13,15 +13,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 from typing import Literal, Callable
-from core.traceback_logger import setup_traceback_logger
+import sys
+import os
+
+# Add src directory to Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
+
+from pystudy_cli.core.traceback_logger import setup_traceback_logger
 
 UI = Literal["tui", "gui"]
 
 def get_runner(ui: UI) -> Callable[[], None]:
     if ui == "tui":
-        from tui.run_tui import main as _run
+        from pystudy_cli.tui.run_tui import main as _run
     elif ui == "gui":
-        from gui.run_gui import main as _run
+        from pystudy_cli.gui.run_gui import main as _run
     else:
         raise ValueError(f"Bro I can't find the UI ({ui}), are you mad?!")
 

@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 from typing import Self, TypeAlias, cast
-from core.constants import FAMILIARITY_LEVELS
+from pystudy_cli.core.constants import FAMILIARITY_LEVELS
 
 JSONValue: TypeAlias = (
     str | int | float | bool | None |

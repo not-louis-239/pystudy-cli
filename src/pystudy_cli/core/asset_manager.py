@@ -14,7 +14,7 @@
 
 # from pathlib import Path  # TODO: Use this to load images and sounds
 import pygame as pg
-from core.constants import ROOT_DIR
+from pystudy_cli.core.paths import ROOT_DIR
 
 class AssetBank:
     def __init__(self) -> None:

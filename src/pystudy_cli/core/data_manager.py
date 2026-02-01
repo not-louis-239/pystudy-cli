@@ -15,11 +15,12 @@
 import json
 import copy
 from pathlib import Path
-from core.profile import StudyProfile
-from core.constants import NEW_STATE
-from core.asset_manager import ROOT_DIR
+from pystudy_cli.core.profile import StudyProfile
+from pystudy_cli.core.constants import NEW_STATE
+from pystudy_cli.core.paths import ROOT_DIR
 
-def save_data(data: StudyProfile, path: Path = ROOT_DIR / "save_data.json") -> str | None:
+# TODO: move paths into designated paths directory
+def save_data(data: StudyProfile, path: Path = ROOT_DIR / "data" / "save_data.json") -> str | None:
     """
     WARNING: data must be serialised first.
 
@@ -40,7 +41,7 @@ def save_data(data: StudyProfile, path: Path = ROOT_DIR / "save_data.json") -> s
 
     return None
 
-def load_data(filename = ROOT_DIR / "save_data.json") -> tuple[StudyProfile, str]:
+def load_data(filename = ROOT_DIR / "data" / "save_data.json") -> tuple[StudyProfile, str]:
     """
     Load JSON data from a file and sync keys with NEW_STATE.
 

@@ -1,8 +1,13 @@
-__pycache__
-.vscode
-.venv
+# Directories
+__pycache__/
+.vscode/
+.venv/
+workflow/
+
+# Save data
+data/
+
+# Other files
 .DS_Store
-save_data.json
 GEMINI.md
-workflow
 traceback.log

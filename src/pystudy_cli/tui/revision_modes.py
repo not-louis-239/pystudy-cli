@@ -12,13 +12,13 @@
 
 import random
 import difflib
-from core.objects import Deck
-from core.constants import (
+from pystudy_cli.core.objects import Deck
+from pystudy_cli.core.constants import (
     FAMILIARITY_LEVELS, NUM_MCQ_OPTIONS, DEFAULT_CARDS_PER_ROUND,
     DEFAULT_SMART_GRADING_STRICTNESS, DEFAULT_PRACTICE_TEST_LEN
 )
-from tui.ui_elements import clear_screen, show_hotkey, cursor_input, display_status_bar
-from tui.colours import (
+from pystudy_cli.tui.ui_elements import clear_screen, show_hotkey, cursor_input, display_status_bar
+from pystudy_cli.tui.colours import (
     BASE_COL, DARK_GREY, LIGHT_GREY, WHITE, LEARNING_COL, RESET,
     ACCENT_COL, SUCCESS_COL, ERROR_COL, UNANSWERED1_COL, UNANSWERED2_COL, ANSWERED1_COL, ANSWERED2_COL,
     CARD_TERM_COL, CARD_DEF_COL, CARD_IDX_COL

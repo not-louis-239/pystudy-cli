@@ -13,8 +13,8 @@
 from pathlib import Path
 import pygame as pg
 
-from core.custom_types import Colour, Surface, Coord2
-from gui.utils import draw_text
+from pystudy_cli.core.custom_types import Colour, Surface, Coord2
+from pystudy_cli.gui.utils import draw_text
 
 class Button:
     """Button that can return pulses in response to user input."""

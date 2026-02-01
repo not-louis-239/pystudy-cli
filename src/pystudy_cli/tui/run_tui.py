@@ -16,17 +16,17 @@ from typing import Callable
 from readchar import readkey
 from datetime import datetime
 
-from tui.revision_modes import flashcard_mode, learn_mode, test_mode
-from tui.ui_elements import clear_screen, show_hotkey, cursor_input, int_convertible, display_status_bar
-from tui.colours import (
+from pystudy_cli.tui.revision_modes import flashcard_mode, learn_mode, test_mode
+from pystudy_cli.tui.ui_elements import clear_screen, show_hotkey, cursor_input, int_convertible, display_status_bar
+from pystudy_cli.tui.colours import (
     col, WHITE, LIGHT_GREY, DARK_GREY, BASE_COL, RESET,
     ACCENT_COL, ERROR_COL, SUCCESS_COL, UNANSWERED1_COL, UNANSWERED2_COL,
     CARD_DEF_COL, CARD_IDX_COL, CARD_TERM_COL,
     DECK_IDX_COL, DECK_NAME_COL,
 )
-from core.exceptions import DeckExistsError, DeckNotFoundError
-from core import save_data, load_data, StudyProfile, Deck, Card
-from core.constants import FAMILIARITY_LEVELS
+from pystudy_cli.core.exceptions import DeckExistsError, DeckNotFoundError
+from pystudy_cli.core import save_data, load_data, StudyProfile, Deck, Card
+from pystudy_cli.core.constants import FAMILIARITY_LEVELS
 
 def card_editor(deck: Deck):
     current_idx = 0
@@ -414,7 +414,7 @@ def input_loop(profile: StudyProfile):
 
             while True:
                 status = save_data(profile)
-                if status == 'success':
+                if status is None:
                     print(f"{SUCCESS_COL}Data saved!")
                     break
 
@@ -466,6 +466,7 @@ def main():
         except (KeyboardInterrupt, EOFError):
             print(f"{ERROR_COL}Interrupted!")
             print(f"\n{LIGHT_GREY}Attempting panic save...{BASE_COL}")
+
             try:
                 save_data(profile)
                 print(f"{SUCCESS_COL}Data saved! {RESET}But don't push your luck next time!")

@@ -13,11 +13,11 @@
 """The profile module - stores logic for StudyProfile, including converting to and from JSON."""
 
 from typing import Self
-from core.objects import (
+from pystudy_cli.core.objects import (
     JSONConvertible, JSONObject,
     Deck, ConfigObject
 )
-from core.exceptions import DeckError, DeckNotFoundError, DeckExistsError
+from pystudy_cli.core.exceptions import DeckError, DeckNotFoundError, DeckExistsError
 
 class StudyProfile(JSONConvertible):
     """Top-level class for managing state as a whole."""
