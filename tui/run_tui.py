@@ -413,7 +413,7 @@ def input_loop(profile: StudyProfile):
             print(f"{BASE_COL}\nSaving data and exiting...")
 
             while True:
-                status = save_data(profile.to_json())
+                status = save_data(profile)
                 if status == 'success':
                     print(f"{SUCCESS_COL}Data saved!")
                     break
@@ -433,8 +433,7 @@ def main():
     # Load data
     clear_screen()
     print(f"{DARK_GREY}Loading data...{BASE_COL}")
-    raw_profile, status = load_data()
-    profile = StudyProfile.from_json(raw_profile)
+    profile, status = load_data()
 
     if status == "success":
         print(f"{SUCCESS_COL}Data loaded!{BASE_COL}")
@@ -463,12 +462,12 @@ def main():
     while True:
         try:
             input_loop(profile)
-            save_data(profile.to_json())
+            save_data(profile)
         except (KeyboardInterrupt, EOFError):
             print(f"{ERROR_COL}Interrupted!")
             print(f"\n{LIGHT_GREY}Attempting panic save...{BASE_COL}")
             try:
-                save_data(profile.to_json())
+                save_data(profile)
                 print(f"{SUCCESS_COL}Data saved! {RESET}But don't push your luck next time!")
                 print(f"{ERROR_COL}Panic save may contain malformed data.")
             except Exception:

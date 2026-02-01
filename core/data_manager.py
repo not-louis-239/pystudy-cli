@@ -10,15 +10,16 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
-"""A bare file manager. Works with JSON only."""
+"""File manager for local user data"""
 
 import json
 import copy
 from pathlib import Path
+from core.profile import StudyProfile
 from core.constants import NEW_STATE
 from core.asset_manager import ROOT_DIR
 
-def save_data(data: dict, path: Path = ROOT_DIR / "save_data.json") -> str | None:
+def save_data(data: StudyProfile, path: Path = ROOT_DIR / "save_data.json") -> str | None:
     """
     WARNING: data must be serialised first.
 
@@ -31,15 +32,15 @@ def save_data(data: dict, path: Path = ROOT_DIR / "save_data.json") -> str | Non
         # if the program errors mid-write
         tmp = path.with_suffix(path.suffix + ".tmp")
         with tmp.open("w", encoding="utf-8") as f:
-            json.dump(data, f, indent=4, ensure_ascii=False)
+            json.dump(data.to_json(), f, indent=4, ensure_ascii=False)
         tmp.replace(path)
-        
+
     except Exception as e:
         return str(e)
 
     return None
 
-def load_data(filename = ROOT_DIR / "save_data.json") -> tuple[dict, str]:
+def load_data(filename = ROOT_DIR / "save_data.json") -> tuple[StudyProfile, str]:
     """
     Load JSON data from a file and sync keys with NEW_STATE.
 
@@ -71,4 +72,4 @@ def load_data(filename = ROOT_DIR / "save_data.json") -> tuple[dict, str]:
         if k not in NEW_STATE:
             del state[k]
 
-    return state, status
+    return StudyProfile.from_json(state), status
