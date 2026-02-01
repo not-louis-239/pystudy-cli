@@ -35,8 +35,8 @@ class JSONConvertible(ABC):
         """Serialise to dict"""
         raise NotImplementedError
 
-    @abstractmethod
     @classmethod
+    @abstractmethod
     def from_json(cls, data: JSONObject) -> Self:
         """Create from dict"""
         raise NotImplementedError

@@ -54,6 +54,9 @@ COL_ANSWERED1 = col(247)
 COL_ANSWERED2 = col(250)
 COL_CURRENT_CARD = COL_ACCENT
 
+# Other colours
+COL_NAME = col(123)
+
 def _main():
     print("=== 256-Color Palette ===")
     for i in range(256):  # Palette viewer
@@ -88,6 +91,7 @@ def _main():
     print(f"{COL_ANSWERED1}COL_ANSWERED1: Sample Text{RESET}")
     print(f"{COL_ANSWERED2}COL_ANSWERED2: Sample Text{RESET}")
     print(f"{COL_CURRENT_CARD}COL_CURRENT_CARD: Sample Text{RESET}\n")
+    print(f"{COL_NAME}COL_NAME: Sample Text{RESET}\n")
 
 if __name__ == "__main__":
     _main()

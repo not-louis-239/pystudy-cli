@@ -13,7 +13,7 @@
 import os
 from datetime import datetime
 
-from readchar import readkey
+import readchar
 
 from pystudy_cli.core.constants import FALLBACK_STATUS_BAR_WIDTH
 from pystudy_cli.tui.colours import (
@@ -30,22 +30,24 @@ def int_convertible(string: str) -> bool:
     """Check if a string is integer-convertible."""
     try:
         int(string)
-        return True
     except ValueError:
         return False
 
+    return True
+
 def cursor_input():
     print(f"{COL_ACCENT}>{COL_WHITE} ", end='', flush=True)
-    action = readkey()
+    action = readchar.readkey()
     print(action)
 
     return action
 
-def clear_screen(full=False) -> None:
-    if full:
+def clear_screen(*, full_clear=False) -> None:
+    if full_clear:
         os.system('cls' if os.name == 'nt' else 'clear')
         os.system('cls' if os.name == 'nt' else 'clear')
         return
+
     print("\033[H\033[J", end='')
 
 def show_hotkey(

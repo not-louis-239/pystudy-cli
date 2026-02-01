@@ -37,6 +37,7 @@ from pystudy_cli.tui.colours import (
     COL_UNANSWERED2,
     COL_WHITE,
     RESET,
+    COL_NAME,
     col,
 )
 from pystudy_cli.tui.revision_modes import flashcard_mode, learn_mode, test_mode
@@ -161,7 +162,7 @@ def card_editor(deck: Deck):
 
 def deck_menu(profile: StudyProfile, deck: Deck):
     while True:
-        clear_screen(full=True)
+        clear_screen(full_clear=True)
         display_status_bar(f"{deck.name} > {'No' if len(deck.cards) == 0 else len(deck.cards)} Cards")
 
         # Show cards
@@ -307,28 +308,28 @@ def help_menu():
     clear_screen()
     display_status_bar("Help")
 
-    print(f"\n{COL_WHITE}How to Use the Program{RESET}")
+    print(f"\n{COL_WHITE}How to Use the CLI{RESET}")
     print(f"{COL_ACCENT}───────────────────────{RESET}")
 
-    print(f"\n{COL_LIGHT_GREY}This program uses two different input methods:{RESET}")
-    print(f"  - {COL_WHITE}Menus:{COL_BASE} For navigating menus, press the single key corresponding to the action (e.g., 'n'). You do not need to press Enter.")
-    print(f"  - {COL_WHITE}Text Entry:{COL_BASE} When prompted to type (e.g., to name a deck), type your text and press Enter to confirm.")
+    print(f"\n{COL_LIGHT_GREY}The CLI uses two different input methods:{RESET}")
+    print(f"{COL_ACCENT}  - {COL_WHITE}Menus:{COL_BASE} To navigate menus, press the key corresponding to the action (e.g., 'n'). You do not need to press Enter.")
+    print(f"{COL_ACCENT}  - {COL_WHITE}Text Entry:{COL_BASE} When prompted to type (e.g., to name a deck), type your text and press Enter to confirm.")
 
     print(f"\n{COL_WHITE}Main Menu{RESET}")
     print(f"{COL_ACCENT}─────────{RESET}")
-    print(f"  - {COL_LIGHT_GREY}n (new deck):{COL_BASE} Create a new, empty deck.")
-    print(f"  - {COL_LIGHT_GREY}o (open deck):{COL_BASE} Open an existing deck to view, edit, or revise its cards.")
-    print(f"  - {COL_LIGHT_GREY}d (delete deck):{COL_BASE} Permanently delete a deck.")
-    print(f"  - {COL_LIGHT_GREY}s (settings):{COL_BASE} Change application settings.")
-    print(f"  - {COL_LIGHT_GREY}h (help):{COL_BASE} Displays this help menu.")
-    print(f"  - {COL_LIGHT_GREY}q (quit):{COL_BASE} Save your data and exit the program.")
+    print(f"{COL_ACCENT}  - {COL_LIGHT_GREY}n (new deck):{COL_BASE} Create a new, empty deck.")
+    print(f"{COL_ACCENT}  - {COL_LIGHT_GREY}o (open deck):{COL_BASE} Open an existing deck to view, edit, or revise its cards.")
+    print(f"{COL_ACCENT}  - {COL_LIGHT_GREY}d (delete deck):{COL_BASE} Permanently delete a deck.")
+    print(f"{COL_ACCENT}  - {COL_LIGHT_GREY}s (settings):{COL_BASE} Change application settings.")
+    print(f"{COL_ACCENT}  - {COL_LIGHT_GREY}h (help):{COL_BASE} Displays this help menu.")
+    print(f"{COL_ACCENT}  - {COL_LIGHT_GREY}q (quit):{COL_BASE} Save your data and exit the program.")
 
     print(f"\n{COL_WHITE}Deck Menu{RESET}")
     print(f"{COL_ACCENT}─────────{RESET}")
-    print(f"  - {COL_LIGHT_GREY}m (modify cards):{COL_BASE} Opens the card editor to add, remove, or change cards.")
-    print(f"  - {COL_LIGHT_GREY}t (rename deck):{COL_BASE} Change the name of the current deck.")
-    print(f"  - {COL_LIGHT_GREY}r (revise deck):{COL_BASE} Choose a study mode (Flashcards, Learn, Test).")
-    print(f"  - {COL_LIGHT_GREY}q (close deck):{COL_BASE} Return to the main menu.")
+    print(f"{COL_ACCENT}  - {COL_LIGHT_GREY}m (modify cards):{COL_BASE} Opens the card editor to add, remove, or change cards.")
+    print(f"{COL_ACCENT}  - {COL_LIGHT_GREY}t (rename deck):{COL_BASE} Change the name of the current deck.")
+    print(f"{COL_ACCENT}  - {COL_LIGHT_GREY}r (revise deck):{COL_BASE} Choose a study mode (Flashcards, Learn, Test).")
+    print(f"{COL_ACCENT}  - {COL_LIGHT_GREY}q (close deck):{COL_BASE} Return to the main menu.")
 
     input(f"\n{COL_DARK_GREY}(Press Enter to return to the main menu){RESET}")
 
@@ -336,7 +337,7 @@ def input_loop(profile: StudyProfile):
     clear_screen()
     display_status_bar()
 
-    print(f"\n{COL_WHITE}Hi, {col(123)}{profile.name}{COL_WHITE}!{COL_BASE}")
+    print(f"\n{COL_WHITE}Hi, {COL_NAME}{profile.name}{COL_WHITE}!{COL_BASE}")
 
     print(f"{COL_WHITE}\nDecks{COL_BASE}")
     if not profile.decks:
