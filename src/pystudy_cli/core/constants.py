@@ -21,6 +21,8 @@ class FamiliarityLevel:
     colour_code: str
     weight: float
 
+# TODO: replace NEW_STATE with dataclass
+
 # New state for the first time the program runs
 NEW_STATE: dict = {
     "name": "",
@@ -43,9 +45,11 @@ NUM_MCQ_OPTIONS = 4
 FALLBACK_STATUS_BAR_WIDTH = 80
 
 def _main():
+    print("Testing familiarity levels")
     for idx, level in FAMILIARITY_LEVELS.items():
         print(f"Familiarity Level {idx}: {level.colour_code}{level.ui_text}{RESET}")
 
+# Defaults
 DEFAULT_CARDS_PER_ROUND: int = 7
 DEFAULT_PRACTICE_TEST_LEN: int = 10
 DEFAULT_SMART_GRADING_STRICTNESS: float = 0.8

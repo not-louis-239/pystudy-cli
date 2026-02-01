@@ -14,17 +14,29 @@
 
 import json
 import copy
+from dataclasses import dataclass
+from enum import Enum, auto
 from pathlib import Path
+
 from pystudy_cli.core.profile import StudyProfile
 from pystudy_cli.core.constants import NEW_STATE
-from pystudy_cli.core.paths import ROOT_DIR
+from pystudy_cli.core import paths
 
-# TODO: move paths into designated paths directory
-def save_data(data: StudyProfile, path: Path = ROOT_DIR / "data" / "save_data.json") -> str | None:
+class LoadStatCategory(Enum):
+    SUCCESS = auto()
+    NEW = auto()
+    CORRUPT = auto()
+    ERROR = auto()
+
+@dataclass
+class LoadStatus:
+    category: LoadStatCategory
+    msg: str
+
+def save_data(data: StudyProfile, path: Path = paths.DATA_DIR / "save_data.json") -> str | None:
     """
     WARNING: data must be serialised first.
-
-    Return None if success, else return error description.
+    Returns None if success, else return error description.
     """
     try:
         path.parent.mkdir(parents=True, exist_ok=True) # Ensure parent directories exist
@@ -41,27 +53,31 @@ def save_data(data: StudyProfile, path: Path = ROOT_DIR / "data" / "save_data.js
 
     return None
 
-def load_data(filename = ROOT_DIR / "data" / "save_data.json") -> tuple[StudyProfile, str]:
+def load_data(filename = paths.DATA_DIR / "save_data.json") -> tuple[StudyProfile, LoadStatus]:
     """
     Load JSON data from a file and sync keys with NEW_STATE.
 
     Returns a tuple:
     * state dict
-    * status string
+    * status object
     """
+
+    msg = None
+
     try:
         with open(filename, "r", encoding="utf-8") as f:
             state = json.load(f)
-        status = "success"
+        category = LoadStatCategory.SUCCESS
     except FileNotFoundError:
         state = copy.deepcopy(NEW_STATE)
-        status = "new"
+        category = LoadStatCategory.NEW
     except json.JSONDecodeError:
         state = copy.deepcopy(NEW_STATE)
-        status = "corrupted"
+        category = LoadStatCategory.CORRUPT
     except Exception as e:
         state = copy.deepcopy(NEW_STATE)
-        status = str(e)
+        category = LoadStatCategory.ERROR
+        msg = str(e)
 
     # Add missing keys
     for k in NEW_STATE.keys():
@@ -73,4 +89,4 @@ def load_data(filename = ROOT_DIR / "data" / "save_data.json") -> tuple[StudyPro
         if k not in NEW_STATE:
             del state[k]
 
-    return StudyProfile.from_json(state), status
+    return StudyProfile.from_json(state), LoadStatus(category, msg if msg is not None else "")
