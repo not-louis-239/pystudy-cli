@@ -13,7 +13,9 @@
 """File to manage core assets"""
 
 import pygame as pg
+
 from pystudy_cli.core import paths
+
 
 class AssetBank:
     def __init__(self) -> None:

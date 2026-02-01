@@ -10,11 +10,14 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
-import pygame as pg
 from pathlib import Path
 from typing import Literal
-from pystudy_cli.core.custom_types import Surface, Coord2, Colour, AColour
+
+import pygame as pg
+
 from pystudy_cli.core.constants import WHITE
+from pystudy_cli.core.custom_types import AColour, Colour, Coord2, Surface
+
 
 def draw_text(surface: Surface, pos: Coord2,
               horiz_align: Literal["left", "centre", "right"],

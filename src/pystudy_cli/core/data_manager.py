@@ -12,15 +12,16 @@
 
 """File manager for local user data"""
 
-import json
 import copy
+import json
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
 
-from pystudy_cli.core.profile import StudyProfile
-from pystudy_cli.core.constants import NEW_STATE
 from pystudy_cli.core import paths
+from pystudy_cli.core.constants import NEW_STATE
+from pystudy_cli.core.profile import StudyProfile
+
 
 class LoadStatCategory(Enum):
     SUCCESS = auto()

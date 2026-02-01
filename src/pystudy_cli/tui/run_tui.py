@@ -10,25 +10,44 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
-import sys
 import math
-from typing import Callable
-from readchar import readkey
+import sys
 from datetime import datetime
+from typing import Callable
 
-from pystudy_cli.tui.revision_modes import flashcard_mode, learn_mode, test_mode
-from pystudy_cli.tui.ui_elements import clear_screen, show_hotkey, cursor_input, int_convertible, display_status_bar
-from pystudy_cli.tui.colours import (
-    col, COL_WHITE, COL_LIGHT_GREY, COL_DARK_GREY, COL_BASE, RESET,
-    COL_ACCENT, COL_ERROR, COL_SUCCESS, COL_UNANSWERED1, COL_UNANSWERED2,
-    COL_CARD_DEF, COL_CARD_INDEX,
-    COL_DECK_INDEX, COL_DECK_NAME,
-)
-from pystudy_cli.core.exceptions import DeckExistsError, DeckNotFoundError
-from pystudy_cli.core.data_manager import save_data, load_data
-from pystudy_cli.core.objects import Deck, Card
-from pystudy_cli.core.profile import StudyProfile
+from readchar import readkey
+
 from pystudy_cli.core.constants import FAMILIARITY_LEVELS
+from pystudy_cli.core.data_manager import load_data, save_data
+from pystudy_cli.core.exceptions import DeckExistsError, DeckNotFoundError
+from pystudy_cli.core.objects import Card, Deck
+from pystudy_cli.core.profile import StudyProfile
+from pystudy_cli.tui.colours import (
+    COL_ACCENT,
+    COL_BASE,
+    COL_CARD_DEF,
+    COL_CARD_INDEX,
+    COL_DARK_GREY,
+    COL_DECK_INDEX,
+    COL_DECK_NAME,
+    COL_ERROR,
+    COL_LIGHT_GREY,
+    COL_SUCCESS,
+    COL_UNANSWERED1,
+    COL_UNANSWERED2,
+    COL_WHITE,
+    RESET,
+    col,
+)
+from pystudy_cli.tui.revision_modes import flashcard_mode, learn_mode, test_mode
+from pystudy_cli.tui.ui_elements import (
+    clear_screen,
+    cursor_input,
+    display_status_bar,
+    int_convertible,
+    show_hotkey,
+)
+
 
 def card_editor(deck: Deck):
     current_idx = 0
@@ -321,7 +340,7 @@ def input_loop(profile: StudyProfile):
 
     print(f"{COL_WHITE}\nDecks{COL_BASE}")
     if not profile.decks:
-        print(f"You don't have any decks yet!")
+        print("You don't have any decks yet!")
     else:
         for i, deck in enumerate(profile.decks, 1):
             print(f"{COL_DECK_INDEX}{i}. {COL_DECK_NAME}{deck.name} {COL_DARK_GREY}({len(deck.cards)} cards)")

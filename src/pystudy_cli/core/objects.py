@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import Self, TypeAlias, cast
+
 from pystudy_cli.core.constants import FAMILIARITY_LEVELS
 
 JSONValue: TypeAlias = (

@@ -19,8 +19,9 @@ import os
 import sys
 import traceback
 from datetime import datetime
-from pystudy_cli.core.constants import FALLBACK_STATUS_BAR_WIDTH
+
 from pystudy_cli.core import paths
+from pystudy_cli.core.constants import FALLBACK_STATUS_BAR_WIDTH
 
 # Store the original excepthook
 original_excepthook = sys.excepthook

@@ -10,8 +10,9 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
-import pygame as pg
 from typing import TypeAlias
+
+import pygame as pg
 
 Colour: TypeAlias = tuple[int, int, int]
 AColour: TypeAlias = tuple[int, int, int, int]

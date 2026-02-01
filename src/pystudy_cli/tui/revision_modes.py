@@ -10,19 +10,42 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
-import random
 import difflib
-from pystudy_cli.core.objects import Deck
+import random
+
 from pystudy_cli.core.constants import (
-    FAMILIARITY_LEVELS, NUM_MCQ_OPTIONS, DEFAULT_CARDS_PER_ROUND,
-    DEFAULT_SMART_GRADING_STRICTNESS, DEFAULT_PRACTICE_TEST_LEN
+    DEFAULT_CARDS_PER_ROUND,
+    DEFAULT_PRACTICE_TEST_LEN,
+    DEFAULT_SMART_GRADING_STRICTNESS,
+    FAMILIARITY_LEVELS,
+    NUM_MCQ_OPTIONS,
 )
-from pystudy_cli.tui.ui_elements import clear_screen, show_hotkey, cursor_input, display_status_bar
+from pystudy_cli.core.objects import Deck
 from pystudy_cli.tui.colours import (
-    COL_BASE, COL_DARK_GREY, COL_LIGHT_GREY, COL_WHITE, COL_LEARNING, RESET,
-    COL_ACCENT, COL_SUCCESS, COL_ERROR, COL_UNANSWERED1, COL_UNANSWERED2, COL_ANSWERED1, COL_ANSWERED2,
-    COL_CARD_TERM, COL_CARD_DEF, COL_CARD_INDEX
+    COL_ACCENT,
+    COL_ANSWERED1,
+    COL_ANSWERED2,
+    COL_BASE,
+    COL_CARD_DEF,
+    COL_CARD_INDEX,
+    COL_CARD_TERM,
+    COL_DARK_GREY,
+    COL_ERROR,
+    COL_LEARNING,
+    COL_LIGHT_GREY,
+    COL_SUCCESS,
+    COL_UNANSWERED1,
+    COL_UNANSWERED2,
+    COL_WHITE,
+    RESET,
 )
+from pystudy_cli.tui.ui_elements import (
+    clear_screen,
+    cursor_input,
+    display_status_bar,
+    show_hotkey,
+)
+
 
 class Question:
     """Base class for Question objects."""

@@ -12,8 +12,8 @@
 
 from dataclasses import dataclass
 
-from pystudy_cli.core.custom_types import Colour
-from pystudy_cli.tui.colours import col, RESET
+from pystudy_cli.tui.colours import RESET, col
+
 
 @dataclass
 class FamiliarityLevel:

@@ -11,10 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import os
-from readchar import readkey
-from pystudy_cli.tui.colours import COL_LIGHT_GREY, COL_BASE, COL_ACCENT, COL_WHITE, RESET, COL_TITLE
-from pystudy_cli.core.constants import FALLBACK_STATUS_BAR_WIDTH
 from datetime import datetime
+
+from readchar import readkey
+
+from pystudy_cli.core.constants import FALLBACK_STATUS_BAR_WIDTH
+from pystudy_cli.tui.colours import (
+    COL_ACCENT,
+    COL_BASE,
+    COL_LIGHT_GREY,
+    COL_TITLE,
+    COL_WHITE,
+    RESET,
+)
+
 
 def int_convertible(string: str) -> bool:
     """Check if a string is integer-convertible."""
@@ -52,7 +62,7 @@ def display_status_bar(context_text: str = ""):
         width = FALLBACK_STATUS_BAR_WIDTH
 
     # 1. Create uncoloured components
-    version_str = f"PyStudy CLI"
+    version_str = "PyStudy CLI"
     time_str = datetime.now().strftime('%H:%M')
 
     # 2. Calculate layout
