@@ -10,6 +10,9 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
 from typing import Self, TypeAlias, cast
 from pystudy_cli.core.constants import FAMILIARITY_LEVELS
 
@@ -20,16 +23,18 @@ JSONValue: TypeAlias = (
 )
 JSONObject: TypeAlias = dict[str, JSONValue]
 
-class JSONConvertible:
+class JSONConvertible(ABC):
     """
     Base class for items that are convertible to and from JSON, e.g. decks, cards.
     Use this for objects that should persist between sessions.
     """
 
+    @abstractmethod
     def to_json(self) -> JSONObject:
         """Serialise to dict"""
         raise NotImplementedError
 
+    @abstractmethod
     @classmethod
     def from_json(cls, data: JSONObject) -> Self:
         """Create from dict"""
