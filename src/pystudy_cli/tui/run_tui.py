@@ -12,7 +12,7 @@
 
 import sys
 
-from pystudy_cli.core.data_manager import load_data, save_data, LoadStatCategory
+from pystudy_cli.core.data_manager import load_profile, save_profile, LoadStatCategory
 from pystudy_cli.tui.colours import (
     COL_ACCENT,
     COL_BASE,
@@ -32,7 +32,7 @@ def main():
     # Load data
     clear_screen()
     print(f"{COL_DARK_GREY}Loading data...{COL_BASE}")
-    profile, status = load_data()
+    profile, status = load_profile()
 
     if status.category == LoadStatCategory.SUCCESS:
         print(f"{COL_SUCCESS}Data loaded!{COL_BASE}")
@@ -61,13 +61,13 @@ def main():
     while True:
         try:
             input_loop(profile)
-            save_data(profile)
+            save_profile(profile)
         except (KeyboardInterrupt, EOFError):
             print(f"{COL_ERROR}Interrupted!")
             print(f"\n{COL_LIGHT_GREY}Attempting panic save...{COL_BASE}")
 
             try:
-                save_data(profile)
+                save_profile(profile)
                 print(f"{COL_SUCCESS}Data saved! {RESET}But don't push your luck next time!")
                 print(f"{COL_ERROR}Panic save may contain malformed data.")
             except Exception:

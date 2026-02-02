@@ -20,6 +20,8 @@ from pathlib import Path
 from pystudy_cli.core import paths
 from pystudy_cli.core.profile import StudyProfile
 from pystudy_cli.core.objects import JSONObject, ConfigObject
+from pystudy_cli.core.objects import Deck
+
 
 class LoadStatCategory(Enum):
     SUCCESS = auto()
@@ -32,7 +34,7 @@ class LoadStatus:
     category: LoadStatCategory
     msg: str
 
-def save_data(data: StudyProfile, path: Path = paths.DATA_DIR / "save_data.json") -> str | None:
+def save_profile(data: StudyProfile, path: Path = paths.DATA_DIR / "save_data.json") -> str | None:
     """
     WARNING: data must be serialised first.
     Returns None if success, else return error description.
@@ -52,7 +54,7 @@ def save_data(data: StudyProfile, path: Path = paths.DATA_DIR / "save_data.json"
 
     return None
 
-def load_data(path = paths.DATA_DIR / "save_data.json") -> tuple[StudyProfile, LoadStatus]:
+def load_profile(path = paths.DATA_DIR / "save_data.json") -> tuple[StudyProfile, LoadStatus]:
     """
     Load data from save files.
     """
@@ -63,10 +65,8 @@ def load_data(path = paths.DATA_DIR / "save_data.json") -> tuple[StudyProfile, L
         with open(path, "r", encoding="utf-8") as f:
             raw_data: JSONObject = json.load(f)
 
-        print("Data")
         profile = StudyProfile.from_json(raw_data)
 
-        print("Profile")
         category = LoadStatCategory.SUCCESS
 
     except FileNotFoundError:
@@ -83,3 +83,41 @@ def load_data(path = paths.DATA_DIR / "save_data.json") -> tuple[StudyProfile, L
         msg = str(e)
 
     return profile, LoadStatus(category, msg if msg is not None else "")
+
+def new_deck_file(deck: Deck, filename: str):
+    paths.DECKS_DIR.mkdir(parents=True, exist_ok=True)
+
+    serialised = deck.to_json()
+    path = paths.DECKS_DIR / filename
+
+    if path.exists():
+        raise FileExistsError("deck file already exists")
+
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(serialised, f)
+
+def delete_deck_file(filename: str):
+    path = paths.DECKS_DIR / filename
+
+    if not path.exists():
+        raise FileNotFoundError(f"Deck file '{filename}' does not exist")
+
+    if path.is_dir():
+        raise IsADirectoryError(f"'{filename}' is a directory, not a file")
+
+    path.unlink()  # delete the file
+
+def save_deck(decK: Deck, filename: str):
+    ...
+
+def load_deck(filename: str) -> Deck:
+    path = paths.DECKS_DIR / filename
+
+    if not path.exists():
+        raise FileNotFoundError("deck file doesn't exist")
+
+    if path.is_dir():
+        raise IsADirectoryError("this is a directory")
+
+    with open(path, "r", encoding="utf-8") as f:
+        return Deck.from_json(json.load(f))

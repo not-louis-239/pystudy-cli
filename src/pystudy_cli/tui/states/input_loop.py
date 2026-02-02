@@ -14,7 +14,7 @@ import sys
 from datetime import datetime
 
 
-from pystudy_cli.core.data_manager import save_data
+from pystudy_cli.core.data_manager import save_profile
 from pystudy_cli.core.exceptions import DeckExistsError, DeckNotFoundError
 from pystudy_cli.core.profile import StudyProfile
 from pystudy_cli.tui.colours import (
@@ -142,7 +142,7 @@ def input_loop(profile: StudyProfile):
             print(f"{COL_BASE}\nSaving data and exiting...")
 
             while True:
-                status = save_data(profile)
+                status = save_profile(profile)
                 if status is None:
                     print(f"{COL_SUCCESS}Data saved!")
                     break
