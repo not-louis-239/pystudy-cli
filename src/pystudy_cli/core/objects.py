@@ -60,16 +60,25 @@ class Deck(JSONConvertible):
     creation_date: str
     name: str
     cards: list[Card]
+    filename: str
 
     def to_json(self) -> JSONObject:
-        return asdict(self)  # Also recursively converts Card dataclasses
+        return {
+            "creation_date": self.creation_date,
+            "name": self.name,
+            "cards": [card.to_json() for card in self.cards]
+        }
 
     @classmethod
-    def from_json(cls, data: JSONObject) -> Self:
+    def from_json(cls, data: JSONObject, filename: str) -> Self:
+        assert isinstance(data["name"], str)
+        assert isinstance(data["creation_date"], str)
+
         return cls(
-            creation_date=str(data["creation_date"]),
-            name=str(data["name"]),
-            cards=[Card.from_json(card_data) for card_data in cast(list, data["cards"])]
+            creation_date=data["creation_date"],
+            name=data["name"],
+            cards=[Card.from_json(card_data) for card_data in cast(list, data.get("cards", []))],
+            filename=filename
         )
 
 @dataclass

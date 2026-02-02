@@ -14,7 +14,7 @@ import sys
 from datetime import datetime
 
 
-from pystudy_cli.core.data_manager import save_profile
+from pystudy_cli.core.data_manager import make_deck_filename, save_profile
 from pystudy_cli.core.exceptions import DeckExistsError, DeckNotFoundError
 from pystudy_cli.core.profile import StudyProfile
 from pystudy_cli.tui.colours import (
@@ -72,7 +72,8 @@ def input_loop(profile: StudyProfile):
             return
 
         try:
-            profile.new_deck(datetime.now().isoformat(), deck_name)
+            filename = make_deck_filename(deck_name, (d.filename for d in profile.decks))
+            profile.new_deck(datetime.now().isoformat(), deck_name, filename)
             input(f"{COL_WHITE}Deck {COL_ACCENT}{deck_name}{COL_WHITE} created. {COL_BASE}(Enter to return)")
         except DeckExistsError:
             input(f"{COL_ERROR}Invalid: Deck name must be unique. {COL_BASE}(Enter to return)")

@@ -40,6 +40,9 @@ def main():
         print(f"{COL_ERROR}No data file found. {COL_LIGHT_GREY}Making a new one...{COL_BASE}")
     elif status.category == LoadStatCategory.CORRUPT:
         print(f"{COL_ERROR}Data file seems corrupted. {COL_LIGHT_GREY}Making a new one...{COL_BASE}")
+    elif status.category == LoadStatCategory.PARTIAL:
+        print(f"{COL_ERROR}Some deck files could not be loaded.{COL_BASE}")
+        print(f"{COL_LIGHT_GREY}{status.msg}{COL_BASE}")
     else:
         print(f"{COL_ERROR}Unexpected error: {COL_WHITE}{status.msg}{COL_ERROR}. {COL_LIGHT_GREY}Making a new file...{COL_BASE}")
 

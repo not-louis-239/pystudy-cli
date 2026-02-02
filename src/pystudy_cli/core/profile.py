@@ -12,14 +12,14 @@
 
 """The profile module - stores logic for StudyProfile, including converting to and from JSON."""
 
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from typing import Self
 
 from pystudy_cli.core.exceptions import DeckError, DeckExistsError, DeckNotFoundError
-from pystudy_cli.core.objects import ConfigObject, Deck, JSONConvertible, JSONObject, Card
+from pystudy_cli.core.objects import ConfigObject, Deck, JSONObject
 
 @dataclass
-class StudyProfile(JSONConvertible):
+class StudyProfile:
     """Top-level class for managing state as a whole."""
     name: str
     decks: list[Deck]
@@ -27,7 +27,11 @@ class StudyProfile(JSONConvertible):
 
     def to_json(self) -> JSONObject:
         """Serialise to dict"""
-        return asdict(self)
+        return {
+            "name": self.name,
+            "config": self.config.to_json(),
+            "deck_files": [deck.filename for deck in self.decks],
+        }
 
     @classmethod
     def from_json(cls, data: JSONObject) -> Self:
@@ -40,31 +44,21 @@ class StudyProfile(JSONConvertible):
             config=ConfigObject.from_json(
                 data["config"]
             ),
-            decks=[
-                Deck(
-                    creation_date=str(deck_data["creation_date"]),
-                    name=str(deck_data["name"]),
-                    cards=[
-                        Card(
-                            term=str(card["term"]),
-                            def_=str(card["def_"]),
-                            familiarity_level=int(card.get("familiarity_level", 0))
-                        ) for card in deck_data.get("cards", [])
-                    ]
-                ) for deck_data in data.get("decks", None) or []  # type: ignore
-            ]
+            decks=[]
         )
 
         return profile
 
-    def new_deck(self, timestamp: str, name: str) -> None:
+    def new_deck(self, timestamp: str, name: str, filename: str) -> None:
         """Adds a new deck to the instance. Deck names must be unique."""
         if not name:
             raise DeckError("name cannot be empty")
         if any(deck.name == name for deck in self.decks):
             raise DeckExistsError("deck name must be unique")
+        if any(deck.filename == filename for deck in self.decks):
+            raise DeckExistsError("deck filename must be unique")
 
-        new = Deck(timestamp, name, [])
+        new = Deck(timestamp, name, [], filename)
         self.decks.append(new)
 
     def remove_deck(self, name: str) -> None:
