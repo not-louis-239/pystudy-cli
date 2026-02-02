@@ -12,16 +12,16 @@
 
 """File manager for local user data"""
 
-import copy
+from pprint import pprint
+
 import json
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
 
 from pystudy_cli.core import paths
-from pystudy_cli.core.constants import NEW_STATE
 from pystudy_cli.core.profile import StudyProfile
-
+from pystudy_cli.core.objects import JSONObject, ConfigObject
 
 class LoadStatCategory(Enum):
     SUCCESS = auto()
@@ -54,40 +54,37 @@ def save_data(data: StudyProfile, path: Path = paths.DATA_DIR / "save_data.json"
 
     return None
 
-def load_data(filename = paths.DATA_DIR / "save_data.json") -> tuple[StudyProfile, LoadStatus]:
+def load_data(path = paths.DATA_DIR / "save_data.json") -> tuple[StudyProfile, LoadStatus]:
     """
-    Load JSON data from a file and sync keys with NEW_STATE.
-
-    Returns a tuple:
-    * state dict
-    * status object
+    Load data from save files.
     """
 
     msg = None
 
     try:
-        with open(filename, "r", encoding="utf-8") as f:
-            state = json.load(f)
+        with open(path, "r", encoding="utf-8") as f:
+            raw_data: JSONObject = json.load(f)
+            pprint(raw_data)
+
+        print("Data")
+        pprint(raw_data)
+        profile = StudyProfile.from_json(raw_data)
+
+        print("Profile")
+        pprint(profile)
         category = LoadStatCategory.SUCCESS
+
     except FileNotFoundError:
-        state = copy.deepcopy(NEW_STATE)
+        profile = StudyProfile("", [], ConfigObject())
         category = LoadStatCategory.NEW
+
     except json.JSONDecodeError:
-        state = copy.deepcopy(NEW_STATE)
+        profile = StudyProfile("", [], ConfigObject())
         category = LoadStatCategory.CORRUPT
+
     except Exception as e:
-        state = copy.deepcopy(NEW_STATE)
+        profile = StudyProfile("", [], ConfigObject())
         category = LoadStatCategory.ERROR
         msg = str(e)
 
-    # Add missing keys
-    for k in NEW_STATE.keys():
-        if k not in state:
-            state[k] = NEW_STATE[k]
-
-    # Remove deprecated keys
-    for k in list(state.keys()):
-        if k not in NEW_STATE:
-            del state[k]
-
-    return StudyProfile.from_json(state), LoadStatus(category, msg if msg is not None else "")
+    return profile, LoadStatus(category, msg if msg is not None else "")

@@ -20,7 +20,7 @@ from pystudy_cli.core.constants import (
     FAMILIARITY_LEVELS,
     NUM_MCQ_OPTIONS,
 )
-from pystudy_cli.core.objects import Deck
+from pystudy_cli.core.objects import Deck, on_correct, on_incorrect
 from pystudy_cli.tui.colours import (
     COL_ACCENT,
     COL_ANSWERED1,
@@ -94,7 +94,7 @@ class MCQuestion(Question):
 def gen_written_qs(deck: Deck, num_questions: int) -> list[Question]:
     cards_sample = random.sample(deck.cards, min(num_questions, len(deck.cards)))
     questions = [
-        Question(card.term, card.definition)
+        Question(card.term, card.def_)
         for card in cards_sample
     ]
     return questions
@@ -104,20 +104,20 @@ def gen_mcqs(deck: Deck, num_questions: int) -> list[MCQuestion]:
         # Not enough cards to generate meaningful distractors
         return []
 
-    all_defs: list[str] = [c.definition for c in deck.cards]
+    all_defs: list[str] = [c.def_ for c in deck.cards]
     cards_sample = random.sample(deck.cards, min(num_questions, len(deck.cards)))
     questions = []
 
     for card in cards_sample:
         # Remove the current card's def
-        distractor_pool = [d for d in all_defs if d != card.definition]
+        distractor_pool = [d for d in all_defs if d != card.def_]
 
         # Select distractors
         distractors = random.sample(distractor_pool, NUM_MCQ_OPTIONS - 1)
 
-        options: list[str] = [*distractors, card.definition]
+        options: list[str] = [*distractors, card.def_]
         random.shuffle(options)
-        correct_idx = options.index(card.definition)
+        correct_idx = options.index(card.def_)
 
         questions.append(MCQuestion(card.term, options, correct_idx))
     return questions
@@ -157,7 +157,7 @@ def flashcard_mode(deck: Deck):
                 # Card UI
                 print(f"{COL_CARD_TERM}Term: {COL_BASE}{card.term}")
                 if revealed:
-                    print(f"{COL_CARD_DEF}Def:  {COL_BASE}{card.definition}\n")
+                    print(f"{COL_CARD_DEF}Def:  {COL_BASE}{card.def_}\n")
                     show_hotkey('l', f'mark {COL_LEARNING}learning')
                     show_hotkey('k', f'mark {COL_SUCCESS}known')
                     show_hotkey('q', 'exit session')
@@ -273,14 +273,14 @@ def learn_mode(deck: Deck) -> None:
                 display_status_bar(f"{deck.name} > Learn Mode > Complete!")
                 print(f"{COL_SUCCESS}You've mastered everything!{RESET}")
                 print(f"\n{COL_WHITE}What now?{RESET}")
-                show_hotkey('r', 'reset card progress and restart')
+                show_hotkey('r', 'reset all card progress and restart')
                 show_hotkey('q', 'return to menu')
 
                 choice = cursor_input()
 
                 # TODO: Add 'keep going' option that preserves progress but starts a new round
                 if choice == 'r':
-                    reset_progress_input = input(f"\n{COL_BASE}Are you sure you want to reset progress? (y/n) {COL_ACCENT}").strip().lower()
+                    reset_progress_input = input(f"\n{COL_BASE}Are you sure you want to reset progress? This will also reset familiarity levels. (y/n) {COL_ACCENT}").strip().lower()
                     reset_progress = reset_progress_input == 'y'
                     if reset_progress:
                         # Reset mastery
@@ -309,7 +309,7 @@ def learn_mode(deck: Deck) -> None:
             user_ans = input(f"{COL_WHITE}Your Def: {COL_ACCENT}")
 
             # Grading
-            is_correct_answer = Question.is_correct_answer(card.definition, user_ans, smart_grading)
+            is_correct_answer = Question.is_correct_answer(card.def_, user_ans, smart_grading)
 
             # TODO: smart grading strictness should be configurable via a ConfigObject
 
@@ -319,18 +319,18 @@ def learn_mode(deck: Deck) -> None:
             print(f"\n{COL_CARD_TERM}Term: {COL_BASE}{card.term}\n")
 
             if is_correct_answer:
-                card.on_correct()
+                on_correct(card)
                 print(f"{COL_SUCCESS}Correct!{RESET}")
-                if user_ans.strip().lower() == card.definition.strip().lower():
-                    print(f"{COL_LIGHT_GREY}Your answer:    {COL_BASE}{card.definition}")
+                if user_ans.strip().lower() == card.def_.strip().lower():
+                    print(f"{COL_LIGHT_GREY}Your answer:    {COL_BASE}{card.def_}")
                 else:
                     print(f"{COL_LIGHT_GREY}Your answer:    {COL_BASE}{user_ans}")
-                    print(f"{COL_LIGHT_GREY}Exact answer:   {COL_BASE}{card.definition}")
+                    print(f"{COL_LIGHT_GREY}Exact answer:   {COL_BASE}{card.def_}")
             else:
-                card.on_incorrect()
+                on_incorrect(card)
                 print(f"{COL_ERROR}Incorrect.{RESET}")
                 print(f"{COL_LIGHT_GREY}Your answer:    {COL_BASE}{user_ans}")
-                print(f"{COL_LIGHT_GREY}Correct answer: {COL_BASE}{card.definition}")
+                print(f"{COL_LIGHT_GREY}Correct answer: {COL_BASE}{card.def_}")
 
             print(f"{COL_LIGHT_GREY}Familiarity: {FAMILIARITY_LEVELS[card.familiarity_level]}")
             input(f"\n{COL_DARK_GREY}(Press Enter to continue){RESET}")

@@ -21,3 +21,10 @@ RealNumber: TypeAlias = int | float
 Coord2: TypeAlias = tuple[RealNumber, RealNumber]
 DiscreteCoord2: TypeAlias = tuple[int, int]
 Surface: TypeAlias = pg.Surface
+
+JSONValue: TypeAlias = (
+    str | int | float | bool | None |
+    list["JSONValue"] |
+    dict[str, "JSONValue"]
+)
+JSONObject: TypeAlias = dict[str, JSONValue]

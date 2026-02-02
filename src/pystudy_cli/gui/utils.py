@@ -15,7 +15,6 @@ from typing import Literal
 
 import pygame as pg
 
-from pystudy_cli.core.constants import WHITE
 from pystudy_cli.core.custom_types import AColour, Colour, Coord2, Surface
 
 
@@ -55,7 +54,7 @@ def draw_text(surface: Surface, pos: Coord2,
 
 def draw_transparent_rect(surface: Surface, pos: Coord2, size: Coord2,
                           bg_colour: AColour = (0, 0, 0, 180),
-                          border_thickness=0, border_colour: Colour = WHITE,
+                          border_thickness=0, border_colour: Colour = (255, 255, 255),
                           ):
     """Draws a semi-transparent rectangle with a border onto a surface.
     For a transparent rect only, set border thickness to 0."""

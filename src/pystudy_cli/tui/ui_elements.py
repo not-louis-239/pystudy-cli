@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import os
+from typing import Any
 from datetime import datetime
 
 import readchar
@@ -26,14 +27,13 @@ from pystudy_cli.tui.colours import (
 )
 
 
-def int_convertible(string: str) -> bool:
-    """Check if a string is integer-convertible."""
+def int_convertible(val: Any, /) -> bool:
+    """Check if a value is integer-convertible."""
     try:
-        int(string)
-    except ValueError:
+        int(val)
+        return True
+    except (ValueError, TypeError):
         return False
-
-    return True
 
 def cursor_input():
     print(f"{COL_ACCENT}>{COL_WHITE} ", end='', flush=True)

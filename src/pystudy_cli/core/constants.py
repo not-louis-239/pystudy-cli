@@ -21,17 +21,6 @@ class FamiliarityLevel:
     colour_code: str
     weight: float
 
-# TODO: replace NEW_STATE with dataclass
-
-# New state for the first time the program runs
-NEW_STATE: dict = {
-    "name": "",
-    "decks": [],
-    "config": {
-        "warn_interrupt": False
-    }
-}
-
 FAMILIARITY_LEVELS: dict[int, FamiliarityLevel] = {
     0: FamiliarityLevel("New", col(207), 0),
     1: FamiliarityLevel("Learning", col(141), 0.15),

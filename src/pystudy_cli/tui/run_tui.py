@@ -18,7 +18,7 @@ from typing import Callable
 from readchar import readkey
 
 from pystudy_cli.core.constants import FAMILIARITY_LEVELS
-from pystudy_cli.core.data_manager import load_data, save_data
+from pystudy_cli.core.data_manager import load_data, save_data, LoadStatCategory
 from pystudy_cli.core.exceptions import DeckExistsError, DeckNotFoundError
 from pystudy_cli.core.objects import Card, Deck
 from pystudy_cli.core.profile import StudyProfile
@@ -106,7 +106,7 @@ def card_editor(deck: Deck):
         show_hotkey("q", "exit editor", 12)
 
         print(f"\n{COL_ACCENT}Term: {COL_LIGHT_GREY}{card.term}")
-        print(f"{COL_ACCENT}Def:  {COL_BASE}{card.definition}")
+        print(f"{COL_ACCENT}Def:  {COL_BASE}{card.def_}")
 
         key = cursor_input()
 
@@ -122,7 +122,7 @@ def card_editor(deck: Deck):
             print(f"{COL_LIGHT_GREY}\nEnter new definition {COL_BASE}(or Enter to cancel)")
             new_def = input(f"{COL_ACCENT}> {COL_WHITE}").strip()
             if new_def:
-                card.definition = new_def
+                card.def_ = new_def
 
         # Previous card
         elif key == 'w':
@@ -193,7 +193,7 @@ def deck_menu(profile: StudyProfile, deck: Deck):
             for i, card in enumerate(deck.cards, start=1):
                 f_lvl = FAMILIARITY_LEVELS[card.familiarity_level]
                 print(f"{COL_CARD_INDEX}{i:>{max_len}}. {f_lvl.colour_code}{card.term}")
-                print(f"{COL_CARD_DEF}{card.definition}{COL_BASE}")
+                print(f"{COL_CARD_DEF}{card.def_}{COL_BASE}")
         else:
             print(f"{COL_BASE}This deck doesn't have any cards yet!")
 
@@ -457,16 +457,16 @@ def main():
     print(f"{COL_DARK_GREY}Loading data...{COL_BASE}")
     profile, status = load_data()
 
-    if status == "success":
+    if status.category == LoadStatCategory.SUCCESS:
         print(f"{COL_SUCCESS}Data loaded!{COL_BASE}")
-    elif status == "new":
+    elif status.category == LoadStatCategory.NEW:
         print(f"{COL_ERROR}No data file found. {COL_LIGHT_GREY}Making a new one...{COL_BASE}")
-    elif status == "corrupted":
+    elif status.category == LoadStatCategory.CORRUPT:
         print(f"{COL_ERROR}Data file seems corrupted. {COL_LIGHT_GREY}Making a new one...{COL_BASE}")
     else:
-        print(f"{COL_ERROR}Unexpected error: {COL_WHITE}{status}{COL_ERROR}. {COL_LIGHT_GREY}Making a new one...{COL_BASE}")
+        print(f"{COL_ERROR}Unexpected error: {COL_WHITE}{status.msg}{COL_ERROR}. {COL_LIGHT_GREY}Making a new file...{COL_BASE}")
 
-    if profile.config.warn_interrupt:  # FIXME: doesn't show
+    if profile.config.warn_interrupt:
         print(f"{COL_ERROR}\nWARNING: {COL_LIGHT_GREY}Unexpected exits (Ctrl-C, Ctrl-D) may result in data corruption or loss.{RESET}")
 
     # Initial setup
