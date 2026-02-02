@@ -31,6 +31,9 @@ class StudyProfile(JSONConvertible):
 
     @classmethod
     def from_json(cls, data: JSONObject) -> Self:
+        assert isinstance(data, dict)
+        assert isinstance(data["name"], str)
+
         """Create from dict"""
         profile = cls(
             name=data["name"],
@@ -48,7 +51,7 @@ class StudyProfile(JSONConvertible):
                             familiarity_level=int(card.get("familiarity_level", 0))
                         ) for card in deck_data.get("cards", [])
                     ]
-                ) for deck_data in data.get("decks", [])
+                ) for deck_data in data.get("decks", None) or []  # type: ignore
             ]
         )
 

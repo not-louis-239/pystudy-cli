@@ -17,7 +17,7 @@ from dataclasses import dataclass, asdict
 from typing import Self, Mapping, Any, cast
 
 from pystudy_cli.core.constants import FAMILIARITY_LEVELS
-from pystudy_cli.core.custom_types import JSONObject
+from pystudy_cli.core.custom_types import JSONObject, JSONValue
 
 class JSONConvertible(ABC):
     """
@@ -81,7 +81,9 @@ class ConfigObject(JSONConvertible):
         return asdict(self)
 
     @classmethod
-    def from_json(cls, data: JSONObject) -> Self:
+    def from_json(cls, data: JSONValue) -> Self:
+        assert isinstance(data, dict)
+
         """Create from dict"""
         return cls(
             warn_interrupt=bool(data.get("warn_interrupt", False))
