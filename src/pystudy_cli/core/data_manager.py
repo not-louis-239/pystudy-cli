@@ -12,8 +12,6 @@
 
 """File manager for local user data"""
 
-from pprint import pprint
-
 import json
 from dataclasses import dataclass
 from enum import Enum, auto
@@ -64,14 +62,11 @@ def load_data(path = paths.DATA_DIR / "save_data.json") -> tuple[StudyProfile, L
     try:
         with open(path, "r", encoding="utf-8") as f:
             raw_data: JSONObject = json.load(f)
-            pprint(raw_data)
 
         print("Data")
-        pprint(raw_data)
         profile = StudyProfile.from_json(raw_data)
 
         print("Profile")
-        pprint(profile)
         category = LoadStatCategory.SUCCESS
 
     except FileNotFoundError:
