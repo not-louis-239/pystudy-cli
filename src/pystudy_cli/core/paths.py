@@ -22,3 +22,4 @@ SOUNDS_DIR: Path = ASSETS_DIR / "sounds"
 # Data directories
 DATA_DIR: Path = ROOT_DIR / "data"
 DECKS_DIR: Path = DATA_DIR / "decks"
+TRASH_DIR: Path = DECKS_DIR / "trash"

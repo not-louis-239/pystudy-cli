@@ -65,6 +65,14 @@ def write_json_atomic(path: Path, data: JSONObject) -> None:
         json.dump(data, f, indent=4, ensure_ascii=False)
     tmp.replace(path)
 
+def trash_deck(path: Path) -> None:
+    trash_dir = paths.TRASH_DIR
+    trash_dir.mkdir(parents=True, exist_ok=True)
+    target = trash_dir / path.name
+    if target.exists():
+        target = trash_dir / f"{path.stem}-{uuid.uuid4().hex[:8]}{path.suffix}"
+    path.replace(target)
+
 def save_profile(data: StudyProfile, path: Path = paths.DATA_DIR / "save_data.json") -> str | None:
     """Returns None if success, else return error description."""
     try:
@@ -76,10 +84,10 @@ def save_profile(data: StudyProfile, path: Path = paths.DATA_DIR / "save_data.js
             deck_filenames.append(deck.filename)
             write_json_atomic(paths.DECKS_DIR / deck.filename, deck.to_json())
 
-        # Remove stale deck files not referenced by the head file
+        # Move stale deck files not referenced by the head file to trash
         existing_files = {p.name for p in paths.DECKS_DIR.glob("*.json")}
         for stale in existing_files - set(deck_filenames):
-            (paths.DECKS_DIR / stale).unlink()
+            trash_deck(paths.DECKS_DIR / stale)
 
         write_json_atomic(path, data.to_json())
 
