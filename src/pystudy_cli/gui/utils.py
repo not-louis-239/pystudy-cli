@@ -10,11 +10,13 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
-import pygame as pg
 from pathlib import Path
 from typing import Literal
-from pystudy_cli.core.custom_types import Surface, Coord2, Colour, AColour
-from pystudy_cli.core.constants import WHITE
+
+import pygame as pg
+
+from pystudy_cli.core.custom_types import AColour, Colour, Coord2, Surface
+
 
 def draw_text(surface: Surface, pos: Coord2,
               horiz_align: Literal["left", "centre", "right"],
@@ -52,7 +54,7 @@ def draw_text(surface: Surface, pos: Coord2,
 
 def draw_transparent_rect(surface: Surface, pos: Coord2, size: Coord2,
                           bg_colour: AColour = (0, 0, 0, 180),
-                          border_thickness=0, border_colour: Colour = WHITE,
+                          border_thickness=0, border_colour: Colour = (255, 255, 255),
                           ):
     """Draws a semi-transparent rectangle with a border onto a surface.
     For a transparent rect only, set border thickness to 0."""

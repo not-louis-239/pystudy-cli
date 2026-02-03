@@ -12,6 +12,7 @@
 
 import pygame as pg
 
+
 def main():
     pg.init()
 

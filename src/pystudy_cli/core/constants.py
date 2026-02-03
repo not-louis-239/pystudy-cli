@@ -10,31 +10,16 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
-from pathlib import Path
 from dataclasses import dataclass
 
-from pystudy_cli.core.custom_types import Colour
-from pystudy_cli.tui.colours import col, RESET
+from pystudy_cli.tui.colours import RESET, col
+
 
 @dataclass
 class FamiliarityLevel:
     ui_text: str
     colour_code: str
     weight: float
-
-VERSION_NUM: str = "0.2.0"
-
-# Colours
-WHITE: Colour = (255, 255, 255)
-
-# New state for the first time the program runs
-NEW_STATE: dict = {
-    "name": "",
-    "decks": [],
-    "config": {
-        "warn_interrupt": False
-    }
-}
 
 FAMILIARITY_LEVELS: dict[int, FamiliarityLevel] = {
     0: FamiliarityLevel("New", col(207), 0),
@@ -49,9 +34,11 @@ NUM_MCQ_OPTIONS = 4
 FALLBACK_STATUS_BAR_WIDTH = 80
 
 def _main():
+    print("Testing familiarity levels")
     for idx, level in FAMILIARITY_LEVELS.items():
         print(f"Familiarity Level {idx}: {level.colour_code}{level.ui_text}{RESET}")
 
+# Defaults
 DEFAULT_CARDS_PER_ROUND: int = 7
 DEFAULT_PRACTICE_TEST_LEN: int = 10
 DEFAULT_SMART_GRADING_STRICTNESS: float = 0.8

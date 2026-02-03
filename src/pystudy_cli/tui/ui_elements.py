@@ -11,38 +11,50 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import os
-from readchar import readkey
-from pystudy_cli.tui.colours import LIGHT_GREY, BASE_COL, ACCENT_COL, WHITE, RESET, TITLE_COL
-from pystudy_cli.core.constants import VERSION_NUM, FALLBACK_STATUS_BAR_WIDTH
+from typing import Any
 from datetime import datetime
 
-def int_convertible(string: str) -> bool:
-    """Check if a string is integer-convertible."""
+import readchar
+
+from pystudy_cli.core.constants import FALLBACK_STATUS_BAR_WIDTH
+from pystudy_cli.tui.colours import (
+    COL_ACCENT,
+    COL_BASE,
+    COL_LIGHT_GREY,
+    COL_TITLE,
+    COL_WHITE,
+    RESET,
+)
+
+
+def int_convertible(val: Any, /) -> bool:
+    """Check if a value is integer-convertible."""
     try:
-        int(string)
+        int(val)
         return True
-    except ValueError:
+    except (ValueError, TypeError):
         return False
 
 def cursor_input():
-    print(f"{ACCENT_COL}>{WHITE} ", end='', flush=True)
-    action = readkey()
+    print(f"{COL_ACCENT}>{COL_WHITE} ", end='', flush=True)
+    action = readchar.readkey()
     print(action)
 
     return action
 
-def clear_screen(full=False) -> None:
-    if full:
+def clear_screen(*, full_clear=False) -> None:
+    if full_clear:
         os.system('cls' if os.name == 'nt' else 'clear')
         os.system('cls' if os.name == 'nt' else 'clear')
         return
+
     print("\033[H\033[J", end='')
 
 def show_hotkey(
         hotkey: str, desc: str, alignment=5,
-        hotkey_col=LIGHT_GREY, desc_col=BASE_COL
+        hotkey_col=COL_LIGHT_GREY, desc_col=COL_BASE
     ):
-    print(f"{hotkey_col}{hotkey:<{alignment}}{desc_col}{desc}{BASE_COL}")
+    print(f"{hotkey_col}{hotkey:<{alignment}}{desc_col}{desc}{COL_BASE}")
 
 def display_status_bar(context_text: str = ""):
     """Displays a status bar at the top of the screen with centered context."""
@@ -52,7 +64,7 @@ def display_status_bar(context_text: str = ""):
         width = FALLBACK_STATUS_BAR_WIDTH
 
     # 1. Create uncoloured components
-    version_str = f"PyStudy CLI v{VERSION_NUM}"
+    version_str = "PyStudy CLI"
     time_str = datetime.now().strftime('%H:%M')
 
     # 2. Calculate layout
@@ -74,11 +86,11 @@ def display_status_bar(context_text: str = ""):
 
         # Assemble and colour final bar
         bar = (
-            f"{TITLE_COL}{version_str}{RESET}"
+            f"{COL_TITLE}{version_str}{RESET}"
             f"{' ' * left_ws_len}"
-            f"{BASE_COL}{context_text}{RESET}"
+            f"{COL_BASE}{context_text}{RESET}"
             f"{' ' * right_ws_len}"
-            f"{ACCENT_COL}{time_str}{RESET}"
+            f"{COL_ACCENT}{time_str}{RESET}"
         )
     else:  # No context text, just left and right align version and time
         spacing = width - (len(version_str) + len(time_str))
@@ -86,10 +98,10 @@ def display_status_bar(context_text: str = ""):
             spacing = 0
 
         bar = (
-            f"{TITLE_COL}{version_str}{RESET}"
+            f"{COL_TITLE}{version_str}{RESET}"
             f"{' ' * spacing}"
-            f"{ACCENT_COL}{time_str}{RESET}"
+            f"{COL_ACCENT}{time_str}{RESET}"
         )
 
     print(bar)
-    print(f"{ACCENT_COL}{'─' * width}{RESET}")
+    print(f"{COL_ACCENT}{'─' * width}{RESET}")

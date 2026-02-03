@@ -11,10 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 from pathlib import Path
+
 import pygame as pg
 
-from pystudy_cli.core.custom_types import Colour, Surface, Coord2
+from pystudy_cli.core.custom_types import Colour, Coord2, Surface
 from pystudy_cli.gui.utils import draw_text
+
 
 class Button:
     """Button that can return pulses in response to user input."""

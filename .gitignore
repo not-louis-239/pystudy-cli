@@ -1,7 +1,10 @@
 # Directories
 __pycache__/
+.ruff_cache/
 .vscode/
 .venv/
+
+# Personal workflow notes
 workflow/
 
 # Save data
@@ -11,3 +14,4 @@ data/
 .DS_Store
 GEMINI.md
 traceback.log
+pyproject.toml

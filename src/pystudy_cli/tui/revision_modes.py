@@ -10,19 +10,42 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
-import random
 import difflib
-from pystudy_cli.core.objects import Deck
+import random
+
 from pystudy_cli.core.constants import (
-    FAMILIARITY_LEVELS, NUM_MCQ_OPTIONS, DEFAULT_CARDS_PER_ROUND,
-    DEFAULT_SMART_GRADING_STRICTNESS, DEFAULT_PRACTICE_TEST_LEN
+    DEFAULT_CARDS_PER_ROUND,
+    DEFAULT_PRACTICE_TEST_LEN,
+    DEFAULT_SMART_GRADING_STRICTNESS,
+    FAMILIARITY_LEVELS,
+    NUM_MCQ_OPTIONS,
 )
-from pystudy_cli.tui.ui_elements import clear_screen, show_hotkey, cursor_input, display_status_bar
+from pystudy_cli.core.objects import Deck, on_correct, on_incorrect
 from pystudy_cli.tui.colours import (
-    BASE_COL, DARK_GREY, LIGHT_GREY, WHITE, LEARNING_COL, RESET,
-    ACCENT_COL, SUCCESS_COL, ERROR_COL, UNANSWERED1_COL, UNANSWERED2_COL, ANSWERED1_COL, ANSWERED2_COL,
-    CARD_TERM_COL, CARD_DEF_COL, CARD_IDX_COL
+    COL_ACCENT,
+    COL_ANSWERED1,
+    COL_ANSWERED2,
+    COL_BASE,
+    COL_CARD_DEF,
+    COL_CARD_INDEX,
+    COL_CARD_TERM,
+    COL_DARK_GREY,
+    COL_ERROR,
+    COL_LEARNING,
+    COL_LIGHT_GREY,
+    COL_SUCCESS,
+    COL_UNANSWERED1,
+    COL_UNANSWERED2,
+    COL_WHITE,
+    RESET,
 )
+from pystudy_cli.tui.ui_elements import (
+    clear_screen,
+    cursor_input,
+    display_status_bar,
+    show_hotkey,
+)
+
 
 class Question:
     """Base class for Question objects."""
@@ -71,7 +94,7 @@ class MCQuestion(Question):
 def gen_written_qs(deck: Deck, num_questions: int) -> list[Question]:
     cards_sample = random.sample(deck.cards, min(num_questions, len(deck.cards)))
     questions = [
-        Question(card.term, card.definition)
+        Question(card.term, card.def_)
         for card in cards_sample
     ]
     return questions
@@ -81,27 +104,27 @@ def gen_mcqs(deck: Deck, num_questions: int) -> list[MCQuestion]:
         # Not enough cards to generate meaningful distractors
         return []
 
-    all_defs: list[str] = [c.definition for c in deck.cards]
+    all_defs: list[str] = [c.def_ for c in deck.cards]
     cards_sample = random.sample(deck.cards, min(num_questions, len(deck.cards)))
     questions = []
 
     for card in cards_sample:
         # Remove the current card's def
-        distractor_pool = [d for d in all_defs if d != card.definition]
+        distractor_pool = [d for d in all_defs if d != card.def_]
 
         # Select distractors
         distractors = random.sample(distractor_pool, NUM_MCQ_OPTIONS - 1)
 
-        options: list[str] = [*distractors, card.definition]
+        options: list[str] = [*distractors, card.def_]
         random.shuffle(options)
-        correct_idx = options.index(card.definition)
+        correct_idx = options.index(card.def_)
 
         questions.append(MCQuestion(card.term, options, correct_idx))
     return questions
 
 def flashcard_mode(deck: Deck):
     if not deck.cards:
-        input(f"{ERROR_COL}This deck has no cards to revise! {BASE_COL}(Enter to return)")
+        input(f"{COL_ERROR}This deck has no cards to revise! {COL_BASE}(Enter to return)")
         return
 
     # Setup
@@ -110,7 +133,7 @@ def flashcard_mode(deck: Deck):
     clear_screen()
     display_status_bar(f"{deck.name} > Flashcards")
 
-    shuffle_input = input(f"\n{WHITE}Shuffle cards before starting? (y/n) {ACCENT_COL}").strip().lower()
+    shuffle_input = input(f"\n{COL_WHITE}Shuffle cards before starting? (y/n) {COL_ACCENT}").strip().lower()
     shuffle: bool = shuffle_input == 'y'
     if shuffle:
         random.shuffle(cards_to_review)
@@ -132,21 +155,21 @@ def flashcard_mode(deck: Deck):
                 display_status_bar(context)
 
                 # Card UI
-                print(f"{CARD_TERM_COL}Term: {BASE_COL}{card.term}")
+                print(f"{COL_CARD_TERM}Term: {COL_BASE}{card.term}")
                 if revealed:
-                    print(f"{CARD_DEF_COL}Def:  {BASE_COL}{card.definition}\n")
-                    show_hotkey('l', f'mark {LEARNING_COL}learning')
-                    show_hotkey('k', f'mark {SUCCESS_COL}known')
+                    print(f"{COL_CARD_DEF}Def:  {COL_BASE}{card.def_}\n")
+                    show_hotkey('l', f'mark {COL_LEARNING}learning')
+                    show_hotkey('k', f'mark {COL_SUCCESS}known')
                     show_hotkey('q', 'exit session')
                 else:
-                    print(f"{CARD_DEF_COL}Def:  {DARK_GREY}(Press space to reveal){BASE_COL}\n")
+                    print(f"{COL_CARD_DEF}Def:  {COL_DARK_GREY}(Press space to reveal){COL_BASE}\n")
                     show_hotkey('space', 'reveal', 9)
                     show_hotkey('q', 'exit session', 9)
 
                 key = cursor_input()
 
                 if key == 'q':
-                    exit_input = input(f"\n{LIGHT_GREY}Are you sure you want to exit? (y/n) {ACCENT_COL}").strip().lower()
+                    exit_input = input(f"\n{COL_LIGHT_GREY}Are you sure you want to exit? (y/n) {COL_ACCENT}").strip().lower()
                     if exit_input == 'y':
                         return
                     continue  # Go back to the card display loop
@@ -167,13 +190,13 @@ def flashcard_mode(deck: Deck):
         while True:
             clear_screen()
             display_status_bar(f"{deck.name} > Flashcards > Round Complete")
-            print(f"{SUCCESS_COL}Round Complete!{RESET}\n")
-            print(f"{WHITE}* {LEARNING_COL}Learning: {BASE_COL}{len(learning_cards)} cards")
-            print(f"{WHITE}* {SUCCESS_COL}Known:    {BASE_COL}{len(known_cards)} cards")
+            print(f"{COL_SUCCESS}Round Complete!{RESET}\n")
+            print(f"{COL_WHITE}* {COL_LEARNING}Learning: {COL_BASE}{len(learning_cards)} cards")
+            print(f"{COL_WHITE}* {COL_SUCCESS}Known:    {COL_BASE}{len(known_cards)} cards")
 
             # All cards known
             if not learning_cards:
-                print(f"\n{SUCCESS_COL}Congratulations! {ACCENT_COL}You've learned all the cards in this session!{RESET}")
+                print(f"\n{COL_SUCCESS}Congratulations! {COL_ACCENT}You've learned all the cards in this session!{RESET}")
                 show_hotkey('r', 'restart session')
                 show_hotkey('q', 'return to menu')
 
@@ -188,7 +211,7 @@ def flashcard_mode(deck: Deck):
                 continue  # to next iteration of display loop
 
             # Still learning some cards
-            print(f"\n{WHITE}What next?{RESET}")
+            print(f"\n{COL_WHITE}What next?{RESET}")
             show_hotkey('l', 'review learning cards')
             show_hotkey('r', 'restart session from beginning')
             show_hotkey('q', 'exit to menu')
@@ -209,7 +232,7 @@ def flashcard_mode(deck: Deck):
 
 def learn_mode(deck: Deck) -> None:
     if not deck.cards:
-        input(f"{ERROR_COL}This deck has no cards to revise! {BASE_COL}(Enter to return)")
+        input(f"{COL_ERROR}This deck has no cards to revise! {COL_BASE}(Enter to return)")
         return
 
     # Config
@@ -219,23 +242,23 @@ def learn_mode(deck: Deck) -> None:
 
         # Cards per round
         try:
-            cards_per_round_str = input(f"{WHITE}How many cards per round? (1-{len(deck.cards)}) (default: {DEFAULT_CARDS_PER_ROUND}): {ACCENT_COL}")
+            cards_per_round_str = input(f"{COL_WHITE}How many cards per round? (1-{len(deck.cards)}) (default: {DEFAULT_CARDS_PER_ROUND}): {COL_ACCENT}")
             if not cards_per_round_str:
                 cards_per_round = DEFAULT_CARDS_PER_ROUND
                 break
             cards_per_round = int(cards_per_round_str)
             if 1 <= cards_per_round <= len(deck.cards):
                 break
-            print(f"{ERROR_COL}Invalid: please enter an integer between 1 and {len(deck.cards)}.{RESET}")
+            print(f"{COL_ERROR}Invalid: please enter an integer between 1 and {len(deck.cards)}.{RESET}")
         except ValueError:
-            print(f"{ERROR_COL}Invalid: please enter an integer between 1 and {len(deck.cards)}.{RESET}")
+            print(f"{COL_ERROR}Invalid: please enter an integer between 1 and {len(deck.cards)}.{RESET}")
 
     # Get shuffle option
-    shuffle_input = input(f"{WHITE}Shuffle cards? (y/n) (default: y) {ACCENT_COL}").strip().lower()
+    shuffle_input = input(f"{COL_WHITE}Shuffle cards? (y/n) (default: y) {COL_ACCENT}").strip().lower()
     shuffle = shuffle_input in ['y', '']
 
     # Get smart grading option
-    smart_grading_input = input(f"{WHITE}Enable smart grading? (y/n) (default: y) {ACCENT_COL}").strip().lower()
+    smart_grading_input = input(f"{COL_WHITE}Enable smart grading? (y/n) (default: y) {COL_ACCENT}").strip().lower()
     smart_grading = smart_grading_input in ['y', '']
 
     # Main loop
@@ -248,16 +271,16 @@ def learn_mode(deck: Deck) -> None:
             while True:
                 clear_screen()
                 display_status_bar(f"{deck.name} > Learn Mode > Complete!")
-                print(f"{SUCCESS_COL}You've mastered everything!{RESET}")
-                print(f"\n{WHITE}What now?{RESET}")
-                show_hotkey('r', 'reset card progress and restart')
+                print(f"{COL_SUCCESS}You've mastered everything!{RESET}")
+                print(f"\n{COL_WHITE}What now?{RESET}")
+                show_hotkey('r', 'reset all card progress and restart')
                 show_hotkey('q', 'return to menu')
 
                 choice = cursor_input()
 
                 # TODO: Add 'keep going' option that preserves progress but starts a new round
                 if choice == 'r':
-                    reset_progress_input = input(f"\n{BASE_COL}Are you sure you want to reset progress? (y/n) {ACCENT_COL}").strip().lower()
+                    reset_progress_input = input(f"\n{COL_BASE}Are you sure you want to reset progress? This will also reset familiarity levels. (y/n) {COL_ACCENT}").strip().lower()
                     reset_progress = reset_progress_input == 'y'
                     if reset_progress:
                         # Reset mastery
@@ -282,41 +305,41 @@ def learn_mode(deck: Deck) -> None:
             # Card UI
             clear_screen()
             display_status_bar(f"{deck.name} > Learn Mode > Card {i+1}/{len(round_cards)}")
-            print(f"\n{CARD_TERM_COL}Term:      {BASE_COL}{card.term}\n")
-            user_ans = input(f"{WHITE}Your Def: {ACCENT_COL}")
+            print(f"\n{COL_CARD_TERM}Term:      {COL_BASE}{card.term}\n")
+            user_ans = input(f"{COL_WHITE}Your Def: {COL_ACCENT}")
 
             # Grading
-            is_correct_answer = Question.is_correct_answer(card.definition, user_ans, smart_grading)
+            is_correct_answer = Question.is_correct_answer(card.def_, user_ans, smart_grading)
 
             # TODO: smart grading strictness should be configurable via a ConfigObject
 
             # Feedback
             clear_screen()
             display_status_bar(f"{deck.name} > Learn Mode > Card {i+1}/{len(round_cards)}")
-            print(f"\n{CARD_TERM_COL}Term: {BASE_COL}{card.term}\n")
+            print(f"\n{COL_CARD_TERM}Term: {COL_BASE}{card.term}\n")
 
             if is_correct_answer:
-                card.on_correct()
-                print(f"{SUCCESS_COL}Correct!{RESET}")
-                if user_ans.strip().lower() == card.definition.strip().lower():
-                    print(f"{LIGHT_GREY}Your answer:    {BASE_COL}{card.definition}")
+                on_correct(card)
+                print(f"{COL_SUCCESS}Correct!{RESET}")
+                if user_ans.strip().lower() == card.def_.strip().lower():
+                    print(f"{COL_LIGHT_GREY}Your answer:    {COL_BASE}{card.def_}")
                 else:
-                    print(f"{LIGHT_GREY}Your answer:    {BASE_COL}{user_ans}")
-                    print(f"{LIGHT_GREY}Exact answer:   {BASE_COL}{card.definition}")
+                    print(f"{COL_LIGHT_GREY}Your answer:    {COL_BASE}{user_ans}")
+                    print(f"{COL_LIGHT_GREY}Exact answer:   {COL_BASE}{card.def_}")
             else:
-                card.on_incorrect()
-                print(f"{ERROR_COL}Incorrect.{RESET}")
-                print(f"{LIGHT_GREY}Your answer:    {BASE_COL}{user_ans}")
-                print(f"{LIGHT_GREY}Correct answer: {BASE_COL}{card.definition}")
+                on_incorrect(card)
+                print(f"{COL_ERROR}Incorrect.{RESET}")
+                print(f"{COL_LIGHT_GREY}Your answer:    {COL_BASE}{user_ans}")
+                print(f"{COL_LIGHT_GREY}Correct answer: {COL_BASE}{card.def_}")
 
-            print(f"{LIGHT_GREY}Familiarity: {FAMILIARITY_LEVELS[card.familiarity_level]}")
-            input(f"\n{DARK_GREY}(Press Enter to continue){RESET}")
+            print(f"{COL_LIGHT_GREY}Familiarity: {FAMILIARITY_LEVELS[card.familiarity_level]}")
+            input(f"\n{COL_DARK_GREY}(Press Enter to continue){RESET}")
 
         # End of round display
         while True:
             clear_screen()
             display_status_bar(f"{deck.name} > Learn Mode > Round Complete")
-            print(f"{SUCCESS_COL}Round Complete!{RESET}")
+            print(f"{COL_SUCCESS}Round Complete!{RESET}")
             print("\nWhat next?")
             show_hotkey('c', 'proceed to next round')
             show_hotkey('q', 'quit to menu')
@@ -329,7 +352,7 @@ def learn_mode(deck: Deck) -> None:
 
 def test_mode(deck: Deck) -> None:
     if not deck.cards:
-        input(f"{ERROR_COL}This deck has no cards to revise! {BASE_COL}(Enter to return)")
+        input(f"{COL_ERROR}This deck has no cards to revise! {COL_BASE}(Enter to return)")
         return
 
     # Main loop
@@ -342,27 +365,27 @@ def test_mode(deck: Deck) -> None:
             # Get number of questions
             while True:
                 try:
-                    num_questions_str = input(f"{WHITE}How many questions? (1-{len(deck.cards)}) (defualt: {DEFAULT_PRACTICE_TEST_LEN}): {ACCENT_COL}")
+                    num_questions_str = input(f"{COL_WHITE}How many questions? (1-{len(deck.cards)}) (defualt: {DEFAULT_PRACTICE_TEST_LEN}): {COL_ACCENT}")
                     if not num_questions_str:
                         num_questions = min(DEFAULT_PRACTICE_TEST_LEN, len(deck.cards))  # TODO: Make this configurable
                         break
                     num_questions = int(num_questions_str)
                     if 1 <= num_questions <= len(deck.cards):
                         break
-                    print(f"{ERROR_COL}Invalid: please enter an integer between 1 and {len(deck.cards)}.{RESET}")
+                    print(f"{COL_ERROR}Invalid: please enter an integer between 1 and {len(deck.cards)}.{RESET}")
                 except ValueError:
-                    print(f"{ERROR_COL}Invalid: please enter an integer between 1 and {len(deck.cards)}.{RESET}")
+                    print(f"{COL_ERROR}Invalid: please enter an integer between 1 and {len(deck.cards)}.{RESET}")
 
             # Get question type
-            print(f"\n{WHITE}Select question type:{RESET}")  # TODO: User should be able to choose both MCQs and written questions
-            print(f"{LIGHT_GREY}1    {BASE_COL}multiple choice")
-            print(f"{LIGHT_GREY}2    {BASE_COL}written answer")
+            print(f"\n{COL_WHITE}Select question type:{RESET}")  # TODO: User should be able to choose both MCQs and written questions
+            print(f"{COL_LIGHT_GREY}1    {COL_BASE}multiple choice")
+            print(f"{COL_LIGHT_GREY}2    {COL_BASE}written answer")
 
             question_type = cursor_input()
 
             if question_type == '1':
                 if len(deck.cards) < NUM_MCQ_OPTIONS:
-                    input(f"{ERROR_COL}Not enough cards for Multiple Choice (min {NUM_MCQ_OPTIONS}).{RESET} (Enter to continue)")
+                    input(f"{COL_ERROR}Not enough cards for Multiple Choice (min {NUM_MCQ_OPTIONS}).{RESET} (Enter to continue)")
                     continue
                 questions = gen_mcqs(deck, num_questions)
                 break
@@ -370,7 +393,7 @@ def test_mode(deck: Deck) -> None:
                 questions = gen_written_qs(deck, num_questions)
                 break
             else:
-                input(f"{ERROR_COL}Invalid selection.{RESET} (Enter to continue)")
+                input(f"{COL_ERROR}Invalid selection.{RESET} (Enter to continue)")
                 continue
 
         current_q_idx = 0
@@ -383,7 +406,7 @@ def test_mode(deck: Deck) -> None:
             display_status_bar(f"{deck.name} > Test Mode > Question {current_q_idx+1}/{len(questions)}")
 
             # Minimap
-            print(f"{LIGHT_GREY}Minimap")
+            print(f"{COL_LIGHT_GREY}Minimap")
             minimap: str = ''
             for i, q in enumerate(questions):
                 if i%40 == 0 and i != 0:
@@ -393,15 +416,15 @@ def test_mode(deck: Deck) -> None:
 
                 # Current question
                 if i == current_q_idx:
-                    colour = ACCENT_COL
+                    colour = COL_ACCENT
 
                 # Answered questions
                 elif q.user_ans is not None:
-                    colour = ANSWERED2_COL if i%2==0 else ANSWERED1_COL
+                    colour = COL_ANSWERED2 if i%2==0 else COL_ANSWERED1
 
                 # Unanswered questions
                 else:
-                    colour = UNANSWERED2_COL if i%2==0 else UNANSWERED1_COL
+                    colour = COL_UNANSWERED2 if i%2==0 else COL_UNANSWERED1
 
                 minimap += colour + "▆▆"
             print(minimap)
@@ -413,25 +436,25 @@ def test_mode(deck: Deck) -> None:
             show_hotkey('r', 'submit test')
             show_hotkey('q', 'quit test')
 
-            print(f"\n{ACCENT_COL}Question {current_q_idx+1}{DARK_GREY}/{len(questions)}")
-            print(f"{BASE_COL}{current_q.text}")
+            print(f"\n{COL_ACCENT}Question {current_q_idx+1}{COL_DARK_GREY}/{len(questions)}")
+            print(f"{COL_BASE}{current_q.text}")
 
             # MCQs
             if isinstance(current_q, MCQuestion):
                 for i, option in enumerate(current_q.options, 1):
-                    print(f"{CARD_IDX_COL}{i}. {CARD_DEF_COL}{option}")
+                    print(f"{COL_CARD_INDEX}{i}. {COL_CARD_DEF}{option}")
                 print()
                 if current_q.user_ans is None:
-                    print(f"{DARK_GREY}You haven't entered an answer yet!")
+                    print(f"{COL_DARK_GREY}You haven't entered an answer yet!")
                 else:
-                    print(f"{LIGHT_GREY}Your answer: {BASE_COL}{current_q.user_ans+1}")
+                    print(f"{COL_LIGHT_GREY}Your answer: {COL_BASE}{current_q.user_ans+1}")
             # Written questions
             else:
                 print()
                 if current_q.user_ans is None:
-                    print(f"{DARK_GREY}You haven't entered an answer yet!")
+                    print(f"{COL_DARK_GREY}You haven't entered an answer yet!")
                 else:
-                    print(f"{LIGHT_GREY}Your answer: {BASE_COL}{current_q.user_ans}")
+                    print(f"{COL_LIGHT_GREY}Your answer: {COL_BASE}{current_q.user_ans}")
 
             key = cursor_input().lower()
 
@@ -447,7 +470,7 @@ def test_mode(deck: Deck) -> None:
 
             # Edit answer
             elif key == 'e':
-                new_ans = input(f"\n{LIGHT_GREY}Enter your answer: {BASE_COL}")
+                new_ans = input(f"\n{COL_LIGHT_GREY}Enter your answer: {COL_BASE}")
                 if isinstance(current_q, MCQuestion):
                     try:
                         current_q.user_ans = int(new_ans)
@@ -456,7 +479,7 @@ def test_mode(deck: Deck) -> None:
                         current_q.user_ans -= 1
                     except ValueError:
                         current_q.user_ans = None
-                        print(f"{ERROR_COL}Invalid: enter an integer from 1 to {NUM_MCQ_OPTIONS}.")
+                        print(f"{COL_ERROR}Invalid: enter an integer from 1 to {NUM_MCQ_OPTIONS}.")
                 else:
                     current_q.user_ans = new_ans
 
@@ -465,14 +488,14 @@ def test_mode(deck: Deck) -> None:
                 print()
                 unanswered_count = sum(1 for q in questions if q.user_ans is None)
                 if unanswered_count > 0:
-                    print(f"{ACCENT_COL}You have {unanswered_count} unanswered question{'s' if unanswered_count > 1 else ''}.")
-                submit_input = input(f"{BASE_COL}Are you sure you want to submit the test? (y/n) {ACCENT_COL}").strip().lower()
+                    print(f"{COL_ACCENT}You have {unanswered_count} unanswered question{'s' if unanswered_count > 1 else ''}.")
+                submit_input = input(f"{COL_BASE}Are you sure you want to submit the test? (y/n) {COL_ACCENT}").strip().lower()
                 if submit_input == 'y':
                     break
 
             # Quit test
             elif key == 'q':
-                quit_input = input(f"\n{BASE_COL}Are you sure you want to quit? (you will lose your progress for this test) (y/n) {ACCENT_COL}").strip().lower()
+                quit_input = input(f"\n{COL_BASE}Are you sure you want to quit? (you will lose your progress for this test) (y/n) {COL_ACCENT}").strip().lower()
                 if quit_input == 'y':
                     return
 
@@ -483,12 +506,12 @@ def test_mode(deck: Deck) -> None:
         question_display: str = ""
         for i, q in enumerate(questions):
             is_correct = q.is_correct()
-            result_icon = f"{SUCCESS_COL}✔" if is_correct else f"{ERROR_COL}✘"
-            question_display += f"{result_icon} {WHITE}Q{i+1}: {q.text}{RESET}\n"
+            result_icon = f"{COL_SUCCESS}✔" if is_correct else f"{COL_ERROR}✘"
+            question_display += f"{result_icon} {COL_WHITE}Q{i+1}: {q.text}{RESET}\n"
 
             # Handle unanswered questions
             if q.user_ans is None:
-                question_display += f"  {DARK_GREY}Unanswered.{RESET}\n\n"
+                question_display += f"  {COL_DARK_GREY}Unanswered.{RESET}\n\n"
                 continue
 
             # Handle MCQs
@@ -496,10 +519,10 @@ def test_mode(deck: Deck) -> None:
                 user_idx = q.user_ans
                 correct_idx = q.correct_ans
                 if is_correct:
-                    question_display += f"  {LIGHT_GREY}Your answer:    {SUCCESS_COL}({correct_idx + 1}) {q.options[correct_idx]}{RESET}\n\n"
+                    question_display += f"  {COL_LIGHT_GREY}Your answer:    {COL_SUCCESS}({correct_idx + 1}) {q.options[correct_idx]}{RESET}\n\n"
                 else:
-                    question_display += f"  {LIGHT_GREY}Your answer:    {ERROR_COL}({q.user_ans + 1}) {q.options[user_idx]}{RESET}\n"
-                    question_display += f"  {LIGHT_GREY}Correct answer: {SUCCESS_COL}({correct_idx + 1}) {q.options[correct_idx]}{RESET}\n\n"
+                    question_display += f"  {COL_LIGHT_GREY}Your answer:    {COL_ERROR}({q.user_ans + 1}) {q.options[user_idx]}{RESET}\n"
+                    question_display += f"  {COL_LIGHT_GREY}Correct answer: {COL_SUCCESS}({correct_idx + 1}) {q.options[correct_idx]}{RESET}\n\n"
                 continue
 
             # Handle written questions
@@ -508,27 +531,27 @@ def test_mode(deck: Deck) -> None:
             if is_correct:
                 if is_exact_match:
                     # Correct and exact match
-                    question_display += f"  {LIGHT_GREY}Your answer:    {SUCCESS_COL}{q.correct_ans}{RESET}\n\n"
+                    question_display += f"  {COL_LIGHT_GREY}Your answer:    {COL_SUCCESS}{q.correct_ans}{RESET}\n\n"
                 else:
                     # Correct due to Smart Grading
-                    question_display += f"  {LIGHT_GREY}Your answer:    {SUCCESS_COL}{q.user_ans}{RESET}\n"
-                    question_display += f"  {LIGHT_GREY}Exact answer:   {SUCCESS_COL}{q.correct_ans}{RESET}\n\n"
+                    question_display += f"  {COL_LIGHT_GREY}Your answer:    {COL_SUCCESS}{q.user_ans}{RESET}\n"
+                    question_display += f"  {COL_LIGHT_GREY}Exact answer:   {COL_SUCCESS}{q.correct_ans}{RESET}\n\n"
             else:
                 # Incorrect
-                question_display += f"  {LIGHT_GREY}Your answer:    {ERROR_COL}{q.user_ans}{RESET}\n"
-                question_display += f"  {LIGHT_GREY}Correct answer: {SUCCESS_COL}{q.correct_ans}{RESET}\n\n"
+                question_display += f"  {COL_LIGHT_GREY}Your answer:    {COL_ERROR}{q.user_ans}{RESET}\n"
+                question_display += f"  {COL_LIGHT_GREY}Correct answer: {COL_SUCCESS}{q.correct_ans}{RESET}\n\n"
 
         # Result display loop
         while True:
             clear_screen()
             display_status_bar(f"{deck.name} > Test Mode > Results")
 
-            print(f"\n{WHITE}Test Complete!")
-            print(f"{BASE_COL}Your score is {SUCCESS_COL if score == len(questions) else ACCENT_COL}{score}/{len(questions)} {DARK_GREY}({score_frac:.2%}){RESET}\n")
+            print(f"\n{COL_WHITE}Test Complete!")
+            print(f"{COL_BASE}Your score is {COL_SUCCESS if score == len(questions) else COL_ACCENT}{score}/{len(questions)} {COL_DARK_GREY}({score_frac:.2%}){RESET}\n")
 
             print(question_display)  # FIXME: Question display sometimes wraps weird
 
-            print(f"\n{WHITE}What next?{RESET}")
+            print(f"\n{COL_WHITE}What next?{RESET}")
             # TODO: add retry with same settings option
             show_hotkey('n', 'new test')
             show_hotkey('q', 'quit to menu')

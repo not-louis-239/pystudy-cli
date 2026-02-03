@@ -13,64 +13,149 @@
 """File manager for local user data"""
 
 import json
-import copy
+import re
+import uuid
+from dataclasses import dataclass
+from enum import Enum, auto
 from pathlib import Path
+from typing import Iterable
+
+from pystudy_cli.core import paths
 from pystudy_cli.core.profile import StudyProfile
-from pystudy_cli.core.constants import NEW_STATE
-from pystudy_cli.core.paths import ROOT_DIR
+from pystudy_cli.core.objects import JSONObject, ConfigObject
+from pystudy_cli.core.objects import Deck
 
-# TODO: move paths into designated paths directory
-def save_data(data: StudyProfile, path: Path = ROOT_DIR / "data" / "save_data.json") -> str | None:
-    """
-    WARNING: data must be serialised first.
 
-    Return None if success, else return error description.
-    """
+class LoadStatCategory(Enum):
+    SUCCESS = auto()
+    NEW = auto()
+    CORRUPT = auto()
+    PARTIAL = auto()
+    ERROR = auto()
+
+@dataclass
+class LoadStatus:
+    category: LoadStatCategory
+    msg: str
+
+def slugify_filename(name: str) -> str:
+    """Convert a deck filename to a filesystem-safe version."""
+
+    slug = re.sub(r"[^a-zA-Z0-9]+", "-", name.strip().lower()).strip("-")
+    return slug or "deck"
+
+def make_deck_filename(name: str, existing: Iterable[str] | None = None) -> str:
+    existing_set = set(existing or [])
+    while True:
+        slug = slugify_filename(name)
+        suffix = uuid.uuid4().hex[:8]
+        filename = f"{slug}-{suffix}.json"
+        if filename not in existing_set:
+            return filename
+
+def write_json_atomic(path: Path, data: JSONObject) -> None:
+    """Helper to write JSON data to a file.
+    Writes to a temporary file first to avoid
+    data truncation or corruption if the program errors
+    mid-write."""
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    with tmp.open("w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+    tmp.replace(path)
+
+def save_profile(data: StudyProfile, path: Path = paths.DATA_DIR / "save_data.json") -> str | None:
+    """Returns None if success, else return error description."""
     try:
-        path.parent.mkdir(parents=True, exist_ok=True) # Ensure parent directories exist
+        paths.DECKS_DIR.mkdir(parents=True, exist_ok=True)
+        deck_filenames = []
+        for deck in data.decks:
+            if not deck.filename:
+                raise ValueError(f"deck '{deck.name}' is missing a filename")
+            deck_filenames.append(deck.filename)
+            write_json_atomic(paths.DECKS_DIR / deck.filename, deck.to_json())
 
-        # Write to temporary file to avoid corruption
-        # if the program errors mid-write
-        tmp = path.with_suffix(path.suffix + ".tmp")
-        with tmp.open("w", encoding="utf-8") as f:
-            json.dump(data.to_json(), f, indent=4, ensure_ascii=False)
-        tmp.replace(path)
+        # Remove stale deck files not referenced by the head file
+        existing_files = {p.name for p in paths.DECKS_DIR.glob("*.json")}
+        for stale in existing_files - set(deck_filenames):
+            (paths.DECKS_DIR / stale).unlink()
+
+        write_json_atomic(path, data.to_json())
 
     except Exception as e:
         return str(e)
 
     return None
 
-def load_data(filename = ROOT_DIR / "data" / "save_data.json") -> tuple[StudyProfile, str]:
+def load_profile(path = paths.DATA_DIR / "save_data.json") -> tuple[StudyProfile, LoadStatus]:
     """
-    Load JSON data from a file and sync keys with NEW_STATE.
+    Load data from save files.
+    """
 
-    Returns a tuple:
-    * state dict
-    * status string
-    """
+    msg = None
+
     try:
-        with open(filename, "r", encoding="utf-8") as f:
-            state = json.load(f)
-        status = "success"
+        with open(path, "r", encoding="utf-8") as f:
+            raw_data: JSONObject = json.load(f)
+
+        name = str(raw_data.get("name", ""))
+        config = ConfigObject.from_json(raw_data.get("config", {}))
+
+        decks: list[Deck] = []
+        errors: list[str] = []
+
+        if "deck_files" in raw_data:
+            deck_files_raw = raw_data.get("deck_files", [])
+            assert isinstance(deck_files_raw, list)
+
+            deck_files = [str(f) for f in deck_files_raw]
+            for filename in deck_files:
+                try:
+                    decks.append(load_deck(filename))
+                except Exception as e:
+                    errors.append(f"{filename}: {e}")
+        elif "decks" in raw_data:
+            existing = set()
+            deck_files_raw = raw_data.get("decks", [])
+            assert isinstance(deck_files_raw, list)
+
+            for deck_data in deck_files_raw:
+                filename = make_deck_filename(str(deck_data.get("name", "deck")), existing)  # type: ignore
+                existing.add(filename)
+                decks.append(Deck.from_json(deck_data, filename))  # type: ignore
+
+        profile = StudyProfile(name, decks, config)
+        category = LoadStatCategory.SUCCESS if not errors else LoadStatCategory.PARTIAL
+        if errors:
+            msg = "Some deck files could not be loaded: " + "; ".join(errors)
+
     except FileNotFoundError:
-        state = copy.deepcopy(NEW_STATE)
-        status = "new"
+        profile = StudyProfile("", [], ConfigObject())
+        category = LoadStatCategory.NEW
+
     except json.JSONDecodeError:
-        state = copy.deepcopy(NEW_STATE)
-        status = "corrupted"
+        profile = StudyProfile("", [], ConfigObject())
+        category = LoadStatCategory.CORRUPT
+
     except Exception as e:
-        state = copy.deepcopy(NEW_STATE)
-        status = str(e)
+        profile = StudyProfile("", [], ConfigObject())
+        category = LoadStatCategory.ERROR
+        msg = str(e)
 
-    # Add missing keys
-    for k in NEW_STATE.keys():
-        if k not in state:
-            state[k] = NEW_STATE[k]
+    return profile, LoadStatus(category, msg if msg is not None else "")
 
-    # Remove deprecated keys
-    for k in list(state.keys()):
-        if k not in NEW_STATE:
-            del state[k]
+def save_deck(deck: Deck, filename: str):
+    write_json_atomic(paths.DECKS_DIR / filename, deck.to_json())
 
-    return StudyProfile.from_json(state), status
+def load_deck(filename: str) -> Deck:
+    path = paths.DECKS_DIR / filename
+
+    if not path.exists():
+        raise FileNotFoundError("deck file doesn't exist")
+
+    if path.is_dir():
+        raise IsADirectoryError("this is a directory")
+
+    with open(path, "r", encoding="utf-8") as f:
+        return Deck.from_json(json.load(f), filename)
