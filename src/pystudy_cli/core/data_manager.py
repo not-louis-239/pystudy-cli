@@ -22,8 +22,8 @@ from typing import Iterable
 
 from pystudy_cli.core import paths
 from pystudy_cli.core.profile import StudyProfile
-from pystudy_cli.core.objects import JSONObject, ConfigObject
-from pystudy_cli.core.objects import Deck
+from pystudy_cli.core.objects import JSONObject, ConfigObject, Deck
+from pystudy_cli.core.constants import VERSION_NUM
 
 
 class LoadStatCategory(Enum):
@@ -108,6 +108,7 @@ def load_profile(path = paths.DATA_DIR / "save_data.json") -> tuple[StudyProfile
             raw_data: JSONObject = json.load(f)
 
         name = str(raw_data.get("name", ""))
+        version = str(raw_data.get("version", VERSION_NUM))
         config = ConfigObject.from_json(raw_data.get("config", {}))
 
         decks: list[Deck] = []
@@ -133,21 +134,21 @@ def load_profile(path = paths.DATA_DIR / "save_data.json") -> tuple[StudyProfile
                 existing.add(filename)
                 decks.append(Deck.from_json(deck_data, filename))  # type: ignore
 
-        profile = StudyProfile(name, decks, config)
+        profile = StudyProfile(version, name, decks, config)
         category = LoadStatCategory.SUCCESS if not errors else LoadStatCategory.PARTIAL
         if errors:
             msg = "Some deck files could not be loaded: " + "; ".join(errors)
 
     except FileNotFoundError:
-        profile = StudyProfile("", [], ConfigObject())
+        profile = StudyProfile(VERSION_NUM, "", [], ConfigObject())
         category = LoadStatCategory.NEW
 
     except json.JSONDecodeError:
-        profile = StudyProfile("", [], ConfigObject())
+        profile = StudyProfile(VERSION_NUM, "", [], ConfigObject())
         category = LoadStatCategory.CORRUPT
 
     except Exception as e:
-        profile = StudyProfile("", [], ConfigObject())
+        profile = StudyProfile(VERSION_NUM, "", [], ConfigObject())
         category = LoadStatCategory.ERROR
         msg = str(e)
 

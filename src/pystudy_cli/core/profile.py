@@ -17,10 +17,12 @@ from typing import Self
 
 from pystudy_cli.core.exceptions import DeckError, DeckExistsError, DeckNotFoundError
 from pystudy_cli.core.objects import ConfigObject, Deck, JSONObject
+from pystudy_cli.core.constants import VERSION_NUM
 
 @dataclass
 class StudyProfile:
     """Top-level class for managing state as a whole."""
+    version: str
     name: str
     decks: list[Deck]
     config: ConfigObject
@@ -28,6 +30,7 @@ class StudyProfile:
     def to_json(self) -> JSONObject:
         """Serialise to dict"""
         return {
+            "version": self.version,
             "name": self.name,
             "config": self.config.to_json(),
             "deck_files": [deck.filename for deck in self.decks],
@@ -38,8 +41,12 @@ class StudyProfile:
         assert isinstance(data, dict)
         assert isinstance(data["name"], str)
 
+        version = data.get("version", VERSION_NUM)
+        assert isinstance(version, str)
+
         """Create from dict"""
         profile = cls(
+            version=version,
             name=data["name"],
             config=ConfigObject.from_json(
                 data["config"]

@@ -21,6 +21,8 @@ class FamiliarityLevel:
     colour_code: str
     weight: float
 
+VERSION_NUM = "v0.2.0"
+
 FAMILIARITY_LEVELS: dict[int, FamiliarityLevel] = {
     0: FamiliarityLevel("New", col(207), 0),
     1: FamiliarityLevel("Learning", col(141), 0.15),

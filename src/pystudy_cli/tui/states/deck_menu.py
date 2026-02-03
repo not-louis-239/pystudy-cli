@@ -98,6 +98,8 @@ def deck_menu(profile: StudyProfile, deck: Deck):
                 input(f"{COL_ERROR}Invalid: That deck name is already taken by another deck! {COL_BASE}(Enter to return)")
                 continue
 
+            # Only change the display name, not filename
+            # This avoids breaking refs in the head data file
             deck.name = new_name
 
         # Revise deck
